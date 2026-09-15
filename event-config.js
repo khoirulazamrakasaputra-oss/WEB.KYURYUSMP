@@ -11,7 +11,7 @@
 
 const EVENT_CONFIG = [
   {
-    aktif: true,
+    aktif: false,
     nama: "PERKILO-METER",
     tanggal: "8 November 2026",
     waktu: "12:00 WIB",
@@ -20,7 +20,7 @@ const EVENT_CONFIG = [
     gambar: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
   },
   {
-    aktif: true,
+    aktif: false,
     nama: "Mining Competition",
     tanggal: "22 September 2026",
     waktu: "20:00 WIB",
