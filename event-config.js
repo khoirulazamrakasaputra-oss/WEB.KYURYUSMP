@@ -11,12 +11,12 @@
 
 const EVENT_CONFIG = [
   {
-    aktif: false,
-    nama: "ewe azel",
-    tanggal: "15 September 2026",
-    waktu: "19:00 WIB",
-    hadiah: "Rp100.000",
-    deskripsi: "Kompetisi memancing seru bersama member KYURYU SMP di area Spawn Lake.",
+    aktif: true,
+    nama: "PERKILO-METER",
+    tanggal: "8 November 2026",
+    waktu: "12:00 WIB",
+    hadiah: "Rp.100/1meter",
+    deskripsi: "Kompetisi lari nonstop, perbanyak kilo meter akan lebih banyak money reward.",
     gambar: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
   },
   {
