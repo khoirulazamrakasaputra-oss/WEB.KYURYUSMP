@@ -100,6 +100,17 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+
+    /* CSS Ender Dragon Logo Stylings */
+    .ender-dragon-logo {
+      background: linear-gradient(135deg, #18092c 0%, #3b0764 50%, #000000 100%);
+      box-shadow: 2px 2px 0px 0px #2c2825, inset 0 0 8px rgba(168, 85, 247, 0.6);
+      position: relative;
+    }
+    .ender-dragon-logo i {
+      color: #e9d5ff;
+      filter: drop-shadow(0 0 6px #c084fc);
+    }
   </style>
 </head>
 <body class="antialiased font-sans selection:bg-amber-200 selection:text-amber-900 leading-relaxed min-h-screen flex flex-col justify-between">
@@ -114,8 +125,9 @@
   <nav class="sticky top-0 z-40 bg-paper-100/95 backdrop-blur-md border-b-2 border-paper-border py-4 transition-all">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
       <a href="#" class="flex items-center gap-3 group cursor-pointer">
-        <div class="w-10 h-10 bg-amber-500 rounded-xl border-2 border-paper-dark shadow-paper-sm flex items-center justify-center transform group-hover:-rotate-6 transition-transform">
-          <i class="fa-solid fa-cube text-white text-xl"></i>
+        <!-- Logo Naga Ender Dragon CSS -->
+        <div class="w-10 h-10 ender-dragon-logo rounded-xl border-2 border-paper-dark flex items-center justify-center transform group-hover:-rotate-6 transition-transform">
+          <i class="fa-solid fa-dragon text-xl"></i>
         </div>
         <div>
           <span class="font-heading font-bold text-xl sm:text-2xl text-paper-dark tracking-wide">Kyuryu<span class="text-amber-600">SMP</span></span>
@@ -123,14 +135,8 @@
       </a>
 
       <!-- Desktop Nav -->
-      <div class="hidden md:flex items-center gap-3 font-semibold text-stone-700 text-sm">
+      <div class="hidden md:flex items-center gap-2 lg:gap-3 font-semibold text-stone-700 text-sm">
         <a href="#" class="hover:text-amber-600 transition-colors py-1 px-2">Home</a>
-        <a href="#events" class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper-sm transition-all flex items-center gap-1.5">
-          🎉 Event List
-        </a>
-        <a href="#info" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper-sm transition-all flex items-center gap-1.5">
-          📰 Info
-        </a>
         <button onclick="navigateToSection('features')" class="hover:text-amber-600 transition-colors py-1 px-2">Fitur</button>
         <button onclick="navigateToSection('creator-rewards')" class="hover:text-amber-600 transition-colors py-1 px-2">Reward Creator</button>
         <button onclick="navigateToSection('rules')" class="hover:text-amber-600 transition-colors py-1 px-2">Aturan</button>
@@ -149,6 +155,21 @@
         <button onclick="switchPage('staff')" id="btn-nav-staff" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-900 text-paper-50 rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase">
           <i class="fa-solid fa-users text-amber-400 mr-1"></i> Staff
         </button>
+
+        <!-- Event List -->
+        <a href="#events" class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5">
+          🎉 Event List
+        </a>
+
+        <!-- Info Terbaru -->
+        <a href="#info" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5">
+          📰 Info
+        </a>
+
+        <!-- Panel Publik (Desktop) -->
+        <a href="https://web.kyuryu.my.id/penel.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5">
+          <i class="fa-solid fa-server text-purple-200"></i> Panel Publik
+        </a>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -158,34 +179,43 @@
     </div>
 
     <!-- Mobile Dropdown -->
-    <div id="mobile-menu" class="hidden md:hidden bg-paper-100 border-b-2 border-paper-border px-6 py-4 space-y-3 font-semibold text-stone-700">
-      <a href="#" onclick="toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Home</a>
+    <div id="mobile-menu" class="hidden md:hidden bg-paper-100 border-b-2 border-paper-border px-5 py-4 space-y-3 font-semibold text-stone-800">
+      <a href="#" onclick="toggleMobileMenu()" class="block w-full py-1.5 border-b border-paper-border text-stone-900 font-bold">Home</a>
       
-      <div class="grid grid-cols-2 gap-2 py-1">
-        <a href="#events" onclick="toggleMobileMenu()" class="text-center py-2 px-3 bg-rose-500 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
-          🎉 Event List
-        </a>
-        <a href="#info" onclick="toggleMobileMenu()" class="text-center py-2 px-3 bg-sky-600 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
-          📰 Informasi
-        </a>
-      </div>
-
-      <button onclick="navigateToSection('features'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Fitur Server</button>
-      <button onclick="navigateToSection('creator-rewards'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Reward Creator</button>
-      <button onclick="navigateToSection('rules'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Aturan</button>
+      <button onclick="navigateToSection('features'); toggleMobileMenu()" class="block w-full text-left py-1.5 border-b border-paper-border text-stone-700">Fitur Server</button>
+      <button onclick="navigateToSection('creator-rewards'); toggleMobileMenu()" class="block w-full text-left py-1.5 border-b border-paper-border text-stone-700">Reward Creator</button>
+      <button onclick="navigateToSection('rules'); toggleMobileMenu()" class="block w-full text-left py-1.5 border-b border-paper-border text-stone-700">Aturan</button>
 
       <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2.5 px-3 bg-emerald-600 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs uppercase">
         <i class="fa-solid fa-map-location-dot mr-1.5"></i> Live Map Server
       </a>
       
-      <div class="pt-2 grid grid-cols-2 gap-2">
-        <button onclick="switchPage('ranks'); toggleMobileMenu()" class="w-full text-center py-2 px-3 bg-amber-500 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
+      <div class="pt-1 grid grid-cols-2 gap-2">
+        <button onclick="switchPage('ranks'); toggleMobileMenu()" class="w-full text-center py-2.5 px-3 bg-amber-500 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
           <i class="fa-solid fa-crown mr-1"></i> List Rank
         </button>
-        <button onclick="switchPage('staff'); toggleMobileMenu()" class="w-full text-center py-2 px-3 bg-stone-800 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
+        <button onclick="switchPage('staff'); toggleMobileMenu()" class="w-full text-center py-2.5 px-3 bg-stone-800 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
           <i class="fa-solid fa-users mr-1"></i> Staff Server
         </button>
       </div>
+
+      <a href="#events" onclick="toggleMobileMenu()" class="block w-full py-2.5 px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs flex items-center justify-between">
+        <span>🎉 Event List</span>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </a>
+
+      <a href="#info" onclick="toggleMobileMenu()" class="block w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs flex items-center justify-between">
+        <span>📰 Informasi Terbaru</span>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </a>
+
+      <!-- TOMBOL PANEL PUBLIK (DI BAWAH INFORMASI TERBARU) -->
+      <a href="https://web.kyuryu.my.id/penel.html" target="_blank" rel="noopener noreferrer" onclick="toggleMobileMenu()" class="block w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs flex items-center justify-between">
+        <span class="flex items-center gap-1.5">
+          <i class="fa-solid fa-server text-purple-200"></i> PANEL PUBLIK
+        </span>
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+      </a>
     </div>
   </nav>
 
@@ -214,20 +244,8 @@
             Petualangan Survival Minecraft Cross-Platform terbaik! Nikmati komunitas yang ramah, fitur RPG interaktif, ekonomi seimbang, dan kebebasan berkreasi.
           </p>
 
-          <!-- Quick Navigation Buttons (Event & Info) -->
-          <div class="flex flex-wrap justify-center md:justify-start gap-3 pt-2">
-            <a href="#events" class="px-5 py-3 bg-rose-500 hover:bg-rose-600 text-white font-extrabold rounded-2xl border-2 border-paper-dark shadow-paper hover:shadow-paper-hover transition-all flex items-center gap-2 text-sm">
-              <i class="fa-solid fa-calendar-check text-rose-200"></i>
-              <span>🎉 Lihat Event List</span>
-            </a>
-            <a href="#info" class="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-2xl border-2 border-paper-dark shadow-paper hover:shadow-paper-hover transition-all flex items-center gap-2 text-sm">
-              <i class="fa-solid fa-bullhorn text-sky-200"></i>
-              <span>📰 Informasi Terbaru</span>
-            </a>
-          </div>
-
           <!-- Server IP Cards -->
-          <div class="grid sm:grid-cols-2 gap-4 pt-4">
+          <div class="grid sm:grid-cols-2 gap-4 pt-2">
             <!-- Bedrock IP Card -->
             <div class="bg-paper-50 p-5 rounded-2xl border-2 border-paper-dark shadow-paper hover:shadow-paper-hover transition-all duration-300 relative group">
               <div class="absolute -top-3 left-4 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border border-paper-dark">
@@ -290,8 +308,8 @@
               </div>
 
               <div class="bg-amber-100/60 p-6 rounded-2xl border-2 border-dashed border-amber-800/30 text-center space-y-4">
-                <div class="w-24 h-24 mx-auto bg-amber-500 rounded-2xl border-2 border-paper-dark shadow-paper flex items-center justify-center text-5xl text-white">
-                  <i class="fa-solid fa-gamepad"></i>
+                <div class="w-24 h-24 mx-auto ender-dragon-logo rounded-2xl border-2 border-paper-dark shadow-paper flex items-center justify-center text-5xl text-white">
+                  <i class="fa-solid fa-dragon text-purple-200"></i>
                 </div>
                 <div>
                   <h3 class="font-heading font-bold text-xl text-stone-900">KyuryuSMP World</h3>
@@ -993,14 +1011,14 @@
       <button onclick="filterStaffPage('dev-admin')" id="staff-tab-dev-admin" class="staff-filter-btn px-4 py-2 rounded-xl border-2 border-paper-dark bg-paper-50 text-stone-700 hover:bg-amber-100 shadow-paper-sm transition-all">Developer / Admin</button>
     </div>
 
-    <!-- Grid Profile Staff dengan Foto Asli -->
+    <!-- Grid Profile Staff dengan Foto URL Asli -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="staff-grid-cards">
       
       <!-- Owner: SinChan -->
       <div class="staff-card-item bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5" data-category="owner">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <div class="relative shrink-0">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=SinChanKyuryu" alt="SinChan" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-rose-500 object-cover shadow-paper-sm" />
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="SinChan" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-rose-500 object-cover shadow-paper-sm" />
             <span class="absolute -bottom-2 -right-2 bg-rose-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-paper-dark">OWNER</span>
           </div>
           <div class="space-y-1">
@@ -1019,11 +1037,11 @@
         </div>
       </div>
 
-      <!-- Co-Owner: Zykano -->
+      <!-- Co-Owner: Zykano / gongon -->
       <div class="staff-card-item bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5" data-category="co-owner">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <div class="relative shrink-0">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=ZykanoKyuryu" alt="Zykano" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-amber-500 object-cover shadow-paper-sm" />
+            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80" alt="gongon" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-amber-500 object-cover shadow-paper-sm" />
             <span class="absolute -bottom-2 -right-2 bg-amber-500 text-stone-900 text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-paper-dark">CO-OWNER</span>
           </div>
           <div class="space-y-1">
@@ -1042,11 +1060,11 @@
         </div>
       </div>
 
-      <!-- Admin/Dev 1: RakaNeko -->
+      <!-- Admin/Dev 1: RaksjaDEV -->
       <div class="staff-card-item bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5" data-category="dev-admin">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <div class="relative shrink-0">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=RakaNekoKyuryu" alt="RakaNeko" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-sky-500 object-cover shadow-paper-sm" />
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" alt="RaksjaDEV" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-sky-500 object-cover shadow-paper-sm" />
             <span class="absolute -bottom-2 -right-2 bg-sky-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-paper-dark">DEV</span>
           </div>
           <div class="space-y-1">
@@ -1065,15 +1083,15 @@
         </div>
       </div>
 
-      <!-- Admin/Dev 2: Azazzel -->
+      <!-- Admin/Dev 2: Azelneko -->
       <div class="staff-card-item bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5" data-category="dev-admin">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <div class="relative shrink-0">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AzazzelKyuryu" alt="Azazzel" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-purple-500 object-cover shadow-paper-sm" />
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" alt="Azelneko" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-purple-500 object-cover shadow-paper-sm" />
             <span class="absolute -bottom-2 -right-2 bg-purple-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-paper-dark">ADMIN</span>
           </div>
           <div class="space-y-1">
-            <h3 class="font-heading font-bold text-xl text-stone-900">Azelnekol</h3>
+            <h3 class="font-heading font-bold text-xl text-stone-900">Azelneko</h3>
             <div class="inline-block px-2.5 py-0.5 bg-purple-100 text-purple-900 font-extrabold text-[11px] rounded-md border border-purple-300">
               Developer / Admin
             </div>
@@ -1092,7 +1110,7 @@
       <div class="staff-card-item bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 md:col-span-2 max-w-2xl mx-auto w-full" data-category="dev-admin">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <div class="relative shrink-0">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=KentrutKyuryu" alt="Kentrut" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-indigo-500 object-cover shadow-paper-sm" />
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80" alt="Kentrut" class="w-20 h-20 rounded-2xl border-2 border-paper-dark bg-indigo-500 object-cover shadow-paper-sm" />
             <span class="absolute -bottom-2 -right-2 bg-indigo-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-lg border border-paper-dark">ADMIN</span>
           </div>
           <div class="space-y-1">
@@ -1208,6 +1226,8 @@
         <a href="#events" class="hover:text-amber-400 transition-colors">Event List</a>
         <span>•</span>
         <a href="#info" class="hover:text-amber-400 transition-colors">Info Terbaru</a>
+        <span>•</span>
+        <a href="https://web.kyuryu.my.id/penel.html" target="_blank" rel="noopener noreferrer" class="hover:text-amber-400 transition-colors">Panel Publik</a>
         <span>•</span>
         <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="hover:text-amber-400 transition-colors">Live Map</a>
         <span>•</span>
