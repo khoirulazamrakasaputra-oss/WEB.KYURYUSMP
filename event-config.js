@@ -17,7 +17,7 @@ const EVENT_CONFIG = [
     waktu: "12:00 WIB",
     hadiah: "Rp.100/1meter",
     deskripsi: "Kompetisi lari nonstop, perbanyak kilo meter akan lebih banyak money reward.",
-    gambar: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
+    gambar: ""
   },
   {
     aktif: false,
