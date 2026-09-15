@@ -9,10 +9,10 @@
 // Cukup ubah nilai di bawah ini tanpa perlu menyentuh kode di index.html.
 // ============================================================================
 
-c onst EVENT_CONFIG = [
+const EVENT_CONFIG = [
   {
     aktif: false,
-    nama: "PERKILO-METER",
+    nama: "kosong",
     tanggal: "8 November 2026",
     waktu: "12:00 WIB",
     hadiah: "Rp.100/1meter",
