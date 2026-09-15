@@ -9,7 +9,7 @@
 // Cukup ubah nilai di bawah ini tanpa perlu menyentuh kode di index.html.
 // ============================================================================
 
-const EVENT_CONFIG = [
+c onst EVENT_CONFIG = [
   {
     aktif: false,
     nama: "PERKILO-METER",
