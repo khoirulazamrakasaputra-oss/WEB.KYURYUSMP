@@ -13,6 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
@@ -87,20 +89,31 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #b8a584;
     }
+
+    /* Skeleton Loading CSS */
+    .skeleton {
+      background: linear-gradient(90deg, #ebdcc3 25%, #f5efe0 50%, #ebdcc3 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+    }
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
   </style>
 </head>
 <body class="antialiased font-sans selection:bg-amber-200 selection:text-amber-900 leading-relaxed min-h-screen flex flex-col justify-between">
 
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-sm bg-stone-900 text-amber-100 px-5 py-3.5 rounded-2xl shadow-2xl border-2 border-stone-700 items-center gap-3">
-    <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+    <i class="fa-solid fa-circle-check text-emerald-400 text-xl" id="toast-icon"></i>
     <span id="toast-message" class="text-sm font-medium">IP Berhasil disalin!</span>
   </div>
 
   <!-- NAVIGATION BAR -->
   <nav class="sticky top-0 z-40 bg-paper-100/95 backdrop-blur-md border-b-2 border-paper-border py-4 transition-all">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-      <a href="#" onclick="switchPage('home')" class="flex items-center gap-3 group cursor-pointer">
+      <a href="#" class="flex items-center gap-3 group cursor-pointer">
         <div class="w-10 h-10 bg-amber-500 rounded-xl border-2 border-paper-dark shadow-paper-sm flex items-center justify-center transform group-hover:-rotate-6 transition-transform">
           <i class="fa-solid fa-cube text-white text-xl"></i>
         </div>
@@ -111,30 +124,30 @@
 
       <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-3 font-semibold text-stone-700 text-sm">
-        <button onclick="switchPage('home')" class="nav-link hover:text-amber-600 transition-colors" data-page="home">Home</button>
-        <button onclick="navigateToSection('features')" class="hover:text-amber-600 transition-colors">Fitur Server</button>
-        <button onclick="navigateToSection('creator-rewards')" class="hover:text-amber-600 transition-colors">Reward Creator</button>
-        <button onclick="navigateToSection('rules')" class="hover:text-amber-600 transition-colors">Aturan</button>
-        <button onclick="navigateToSection('resource-pack')" class="hover:text-amber-600 transition-colors">Resource Pack</button>
-
-        <!-- Tombol Event List -->
-        <a href="#events" onclick="openEventPage(); return false;" id="btn-nav-events" class="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5">
-          <i class="fa-solid fa-calendar-days text-rose-200"></i> Event List
+        <a href="#" class="hover:text-amber-600 transition-colors py-1 px-2">Home</a>
+        <a href="#events" class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper-sm transition-all flex items-center gap-1.5">
+          🎉 Event List
         </a>
+        <a href="#info" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper-sm transition-all flex items-center gap-1.5">
+          📰 Info
+        </a>
+        <button onclick="navigateToSection('features')" class="hover:text-amber-600 transition-colors py-1 px-2">Fitur</button>
+        <button onclick="navigateToSection('creator-rewards')" class="hover:text-amber-600 transition-colors py-1 px-2">Reward Creator</button>
+        <button onclick="navigateToSection('rules')" class="hover:text-amber-600 transition-colors py-1 px-2">Aturan</button>
 
         <!-- Tombol Live Map Server -->
-        <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5">
-          <i class="fa-solid fa-map-location-dot text-emerald-200"></i> LIVE MAP SERVER
+        <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase flex items-center gap-1.5 ml-1">
+          <i class="fa-solid fa-map-location-dot text-emerald-200"></i> LIVE MAP
         </a>
 
         <!-- Tombol Halaman List Rank -->
-        <button onclick="switchPage('ranks')" id="btn-nav-ranks" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase">
-          <i class="fa-solid fa-crown text-amber-200 mr-1.5"></i> List Rank
+        <button onclick="switchPage('ranks')" id="btn-nav-ranks" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase">
+          <i class="fa-solid fa-crown text-amber-200 mr-1"></i> List Rank
         </button>
 
         <!-- Tombol Halaman Staff -->
-        <button onclick="switchPage('staff')" id="btn-nav-staff" class="px-3.5 py-2 bg-stone-800 hover:bg-stone-900 text-paper-50 rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase">
-          <i class="fa-solid fa-users text-amber-400 mr-1.5"></i> Staff
+        <button onclick="switchPage('staff')" id="btn-nav-staff" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-900 text-paper-50 rounded-xl font-bold border-2 border-paper-dark shadow-paper hover:-translate-y-0.5 transition-all text-xs tracking-wider uppercase">
+          <i class="fa-solid fa-users text-amber-400 mr-1"></i> Staff
         </button>
       </div>
 
@@ -146,15 +159,20 @@
 
     <!-- Mobile Dropdown -->
     <div id="mobile-menu" class="hidden md:hidden bg-paper-100 border-b-2 border-paper-border px-6 py-4 space-y-3 font-semibold text-stone-700">
-      <button onclick="switchPage('home'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Home</button>
+      <a href="#" onclick="toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Home</a>
+      
+      <div class="grid grid-cols-2 gap-2 py-1">
+        <a href="#events" onclick="toggleMobileMenu()" class="text-center py-2 px-3 bg-rose-500 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
+          🎉 Event List
+        </a>
+        <a href="#info" onclick="toggleMobileMenu()" class="text-center py-2 px-3 bg-sky-600 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs">
+          📰 Informasi
+        </a>
+      </div>
+
       <button onclick="navigateToSection('features'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Fitur Server</button>
       <button onclick="navigateToSection('creator-rewards'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Reward Creator</button>
       <button onclick="navigateToSection('rules'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Aturan</button>
-      <button onclick="navigateToSection('resource-pack'); toggleMobileMenu()" class="block w-full text-left py-1 hover:text-amber-600">Resource Pack</button>
-
-      <a href="#events" onclick="openEventPage(); toggleMobileMenu(); return false;" class="block w-full text-center py-2.5 px-3 bg-rose-500 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs uppercase">
-        <i class="fa-solid fa-calendar-days mr-1.5"></i> Event List
-      </a>
 
       <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="block w-full text-center py-2.5 px-3 bg-emerald-600 text-white font-bold rounded-xl border-2 border-paper-dark shadow-paper-sm text-xs uppercase">
         <i class="fa-solid fa-map-location-dot mr-1.5"></i> Live Map Server
@@ -195,6 +213,18 @@
           <p class="text-stone-600 text-base sm:text-lg max-w-xl mx-auto md:mx-0 font-medium">
             Petualangan Survival Minecraft Cross-Platform terbaik! Nikmati komunitas yang ramah, fitur RPG interaktif, ekonomi seimbang, dan kebebasan berkreasi.
           </p>
+
+          <!-- Quick Navigation Buttons (Event & Info) -->
+          <div class="flex flex-wrap justify-center md:justify-start gap-3 pt-2">
+            <a href="#events" class="px-5 py-3 bg-rose-500 hover:bg-rose-600 text-white font-extrabold rounded-2xl border-2 border-paper-dark shadow-paper hover:shadow-paper-hover transition-all flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-calendar-check text-rose-200"></i>
+              <span>🎉 Lihat Event List</span>
+            </a>
+            <a href="#info" class="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-2xl border-2 border-paper-dark shadow-paper hover:shadow-paper-hover transition-all flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-bullhorn text-sky-200"></i>
+              <span>📰 Informasi Terbaru</span>
+            </a>
+          </div>
 
           <!-- Server IP Cards -->
           <div class="grid sm:grid-cols-2 gap-4 pt-4">
@@ -1084,49 +1114,88 @@
     </div>
   </main>
 
-  <!-- ==================== HALAMAN 4: EVENT LIST PAGE ==================== -->
-  <main id="page-events" class="page-container hidden max-w-6xl mx-auto py-12 px-4 sm:px-6 animate-fade-in w-full">
-    <!-- Breadcrumb / Kembali ke Homepage -->
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <button onclick="closeEventPage()" class="inline-flex items-center gap-2 px-4 py-2 bg-paper-50 hover:bg-paper-200 text-paper-dark font-bold text-xs uppercase rounded-xl border-2 border-paper-dark shadow-paper-sm transition-all cursor-pointer">
-        <i class="fa-solid fa-arrow-left"></i> Kembali
-      </button>
-      <div class="text-xs font-bold text-stone-500 uppercase tracking-wider">Halaman Resmi • Event KyuryuSMP</div>
+  <!-- ==================== HALAMAN 4: HALAMAN EVENT LIST (#events) ==================== -->
+  <main id="page-events" class="page-container hidden max-w-5xl mx-auto py-10 px-4 sm:px-6 animate-fade-in w-full">
+    <div class="mb-6 flex items-center justify-between">
+      <a href="#" class="inline-flex items-center gap-2 px-4 py-2 bg-paper-50 hover:bg-paper-200 text-paper-dark font-bold text-xs uppercase rounded-xl border-2 border-paper-dark shadow-paper-sm transition-all">
+        <i class="fa-solid fa-arrow-left"></i> ← Kembali
+      </a>
+      <div class="text-xs font-bold text-stone-500 uppercase tracking-wider">KyuryuSMP • Schedule & Events</div>
     </div>
 
-    <!-- Header Event Page -->
-    <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
-      <span class="text-xs font-extrabold tracking-widest uppercase bg-rose-200 text-rose-900 px-3 py-1 rounded-md border border-rose-400">Official Server Events</span>
-      <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-stone-900">EVENT LIST</h2>
-      <p class="text-stone-600 text-sm font-medium">Event yang sedang berlangsung di KYURYU SMP</p>
-      
-      <!-- Counter Badge Event Aktif -->
-      <div class="pt-2 flex justify-center">
-        <span id="event-active-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 border-2 border-emerald-600/40 text-emerald-900 font-extrabold text-xs shadow-paper-sm">
-          🟢 0 EVENT AKTIF
+    <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
+      <span class="text-xs font-extrabold tracking-widest uppercase bg-rose-200 text-rose-900 px-3 py-1 rounded-md border border-rose-400">Special Competition</span>
+      <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-stone-900">🎉 EVENT LIST</h2>
+      <p class="text-stone-600 text-sm font-medium">Ikuti berbagai event berhadiah menarik yang diselenggarakan oleh Server KyuryuSMP!</p>
+
+      <div id="active-event-count-badge" class="pt-2">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 border-2 border-emerald-600/40 text-emerald-900 font-bold text-xs shadow-paper-sm">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span id="event-count-text">Memuat daftar event...</span>
         </span>
       </div>
     </div>
 
-    <!-- Container Grid Event Card -->
-    <div id="event-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Card event akan digenerate otomatis via event-config.js -->
+    <!-- Container Event List Cards -->
+    <div id="events-loading-skeleton" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper space-y-4">
+        <div class="w-full h-48 rounded-2xl skeleton"></div>
+        <div class="w-1/3 h-6 rounded-lg skeleton"></div>
+        <div class="w-2/3 h-8 rounded-lg skeleton"></div>
+        <div class="w-full h-16 rounded-lg skeleton"></div>
+      </div>
+      <div class="bg-paper-50 p-6 rounded-3xl border-3 border-paper-dark shadow-paper space-y-4">
+        <div class="w-full h-48 rounded-2xl skeleton"></div>
+        <div class="w-1/3 h-6 rounded-lg skeleton"></div>
+        <div class="w-2/3 h-8 rounded-lg skeleton"></div>
+        <div class="w-full h-16 rounded-lg skeleton"></div>
+      </div>
     </div>
 
-    <!-- Empty State -->
-    <div id="event-empty-state" class="hidden bg-paper-50 border-3 border-paper-dark rounded-3xl p-10 text-center max-w-lg mx-auto shadow-paper my-8 space-y-4">
-      <div class="w-16 h-16 mx-auto bg-amber-100 border-2 border-paper-dark rounded-2xl flex items-center justify-center text-amber-600 text-3xl">
-        🎉
+    <div id="events-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+      <!-- Injected via Supabase -->
+    </div>
+  </main>
+
+  <!-- ==================== HALAMAN 5: HALAMAN INFORMASI (#info) ==================== -->
+  <main id="page-info" class="page-container hidden max-w-4xl mx-auto py-10 px-4 sm:px-6 animate-fade-in w-full">
+    <div class="mb-6 flex items-center justify-between">
+      <a href="#" class="inline-flex items-center gap-2 px-4 py-2 bg-paper-50 hover:bg-paper-200 text-paper-dark font-bold text-xs uppercase rounded-xl border-2 border-paper-dark shadow-paper-sm transition-all">
+        <i class="fa-solid fa-arrow-left"></i> ← Kembali
+      </a>
+      <div class="text-xs font-bold text-stone-500 uppercase tracking-wider">KyuryuSMP • Announcement</div>
+    </div>
+
+    <div class="text-center max-w-2xl mx-auto mb-10 space-y-2">
+      <span class="text-xs font-extrabold tracking-widest uppercase bg-sky-200 text-sky-900 px-3 py-1 rounded-md border border-sky-400">Server News</span>
+      <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-stone-900">📰 INFORMASI TERBARU</h2>
+      <p class="text-stone-600 text-sm font-medium">Berita, update, dan pengumuman resmi mengenai Server KyuryuSMP.</p>
+    </div>
+
+    <!-- Container Info Cards -->
+    <div id="info-loading-skeleton" class="space-y-6">
+      <div class="bg-paper-50 p-6 sm:p-8 rounded-3xl border-3 border-paper-dark shadow-paper space-y-4">
+        <div class="w-3/4 h-8 rounded-lg skeleton"></div>
+        <div class="w-1/4 h-4 rounded-lg skeleton"></div>
+        <div class="w-full h-24 rounded-lg skeleton"></div>
       </div>
-      <h3 class="font-heading font-bold text-2xl text-stone-900">BELUM ADA EVENT</h3>
-      <p class="text-stone-600 text-sm font-medium">
-        Saat ini belum ada event yang sedang berlangsung. Pantau terus KYURYU SMP untuk event berikutnya!
-      </p>
+      <div class="bg-paper-50 p-6 sm:p-8 rounded-3xl border-3 border-paper-dark shadow-paper space-y-4">
+        <div class="w-3/4 h-8 rounded-lg skeleton"></div>
+        <div class="w-1/4 h-4 rounded-lg skeleton"></div>
+        <div class="w-full h-24 rounded-lg skeleton"></div>
+      </div>
+    </div>
+
+    <div id="info-list-container" class="space-y-6 hidden">
+      <!-- Injected via Supabase -->
     </div>
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-paper-dark text-paper-100 py-10 px-4 sm:px-6 border-t-4 border-amber-600">
+  <footer class="bg-paper-dark text-paper-100 py-10 px-4 sm:px-6 border-t-4 border-amber-600 mt-12">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
       <div>
         <div class="font-heading font-bold text-2xl tracking-wide">Kyuryu<span class="text-amber-500">SMP</span></div>
@@ -1134,17 +1203,17 @@
       </div>
 
       <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-stone-300 font-semibold">
-        <button onclick="switchPage('home')" class="hover:text-amber-400 transition-colors">Home</button>
+        <a href="#" class="hover:text-amber-400 transition-colors">Home</a>
         <span>•</span>
-        <a href="#events" onclick="openEventPage(); return false;" class="hover:text-amber-400 transition-colors">Event List</a>
+        <a href="#events" class="hover:text-amber-400 transition-colors">Event List</a>
+        <span>•</span>
+        <a href="#info" class="hover:text-amber-400 transition-colors">Info Terbaru</a>
         <span>•</span>
         <a href="http://basic-4.mineidhost.com:19318" target="_blank" rel="noopener noreferrer" class="hover:text-amber-400 transition-colors">Live Map</a>
         <span>•</span>
         <button onclick="switchPage('ranks')" class="hover:text-amber-400 transition-colors">Daftar Rank</button>
         <span>•</span>
         <button onclick="switchPage('staff')" class="hover:text-amber-400 transition-colors">Staff List</button>
-        <span>•</span>
-        <button onclick="navigateToSection('rules')" class="hover:text-amber-400 transition-colors">Server Rules</button>
       </div>
 
       <div class="text-xs text-stone-500">
@@ -1153,164 +1222,54 @@
     </div>
   </footer>
 
-  <!-- Muat file konfigurasi event -->
-  <script src="event-config.js"></script>
-
-  <!-- VANILLA JAVASCRIPT LOGIC & API STATUS -->
+  <!-- VANILLA JAVASCRIPT LOGIC & SUPABASE CONFIG -->
   <script>
-    // Copy to Clipboard Feature
-    function copyToClipboard(text, successMsg) {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast(successMsg);
-      }).catch(err => {
-        console.error('Gagal menyalin text: ', err);
-      });
+    /* ==========================================
+       1. SUPABASE CONFIGURATION
+       ========================================== */
+    const SUPABASE_URL = "https://ytkhmmjapbpiptiplhse.supabase.co/rest/v1/";
+    const SUPABASE_ANON_KEY = "sb_publishable_d-jt0gv-MBjKLSHNiU_xmA_maiiA8Ea";
+
+    let _supabase = null;
+    if (typeof supabase !== 'undefined' && SUPABASE_URL !== "MASUKKAN_SUPABASE_URL") {
+      _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    // Show Toast Notification
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toast-message');
-      toastMessage.innerText = message;
-      
-      toast.classList.remove('hidden');
-      toast.classList.add('flex', 'animate-fade-in');
-      
-      setTimeout(() => {
-        toast.classList.add('hidden');
-        toast.classList.remove('flex', 'animate-fade-in');
-      }, 3000);
-    }
+    /* ==========================================
+       2. HASH ROUTING & PAGE NAVIGATION
+       ========================================== */
+    function handleHashRouting() {
+      const hash = window.location.hash;
+      const allPages = ['page-home', 'page-ranks', 'page-staff', 'page-events', 'page-info'];
 
-    // Toggle Mobile Navigation
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    }
-
-    // Single Page Navigation System (Tanpa Popup Modal)
-    function switchPage(pageId) {
-      const pages = ['page-home', 'page-ranks', 'page-staff', 'page-events'];
-      pages.forEach(p => {
+      allPages.forEach(p => {
         const el = document.getElementById(p);
-        if (p === `page-${pageId}`) {
-          el.classList.remove('hidden');
-        } else {
-          el.classList.add('hidden');
-        }
+        if (el) el.classList.add('hidden');
       });
+
+      if (hash === '#events') {
+        document.getElementById('page-events').classList.remove('hidden');
+        loadEventsData();
+      } else if (hash === '#info') {
+        document.getElementById('page-info').classList.remove('hidden');
+        loadNewsData();
+      } else {
+        // Fallback default page (home/ranks/staff)
+        const currentActive = window._currentSubPage || 'home';
+        document.getElementById(`page-${currentActive}`).classList.remove('hidden');
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Buka Halaman Event List melalui Hash Routing
-    function openEventPage() {
-      window.location.hash = 'events';
+    function switchPage(pageId) {
+      window._currentSubPage = pageId;
+      if (window.location.hash) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+      }
+      handleHashRouting();
     }
 
-    // Tutup / Kembali dari Event List
-    function closeEventPage() {
-      if (window.location.hash === '#events') {
-        history.pushState('', document.title, window.location.pathname + window.location.search);
-      }
-      switchPage('home');
-    }
-
-    // Render Dynamic Events dari EVENT_CONFIG
-    function renderEvents() {
-      const container = document.getElementById('event-cards-container');
-      const emptyState = document.getElementById('event-empty-state');
-      const activeBadge = document.getElementById('event-active-badge');
-
-      if (!container) return;
-
-      // Filter event yang aktif: true
-      const activeEvents = typeof EVENT_CONFIG !== 'undefined' 
-        ? EVENT_CONFIG.filter(item => item.aktif === true) 
-        : [];
-
-      // Update badge jumlah event aktif
-      if (activeEvents.length > 0) {
-        activeBadge.innerHTML = `🟢 ${activeEvents.length} Event Aktif`;
-      } else {
-        activeBadge.innerHTML = `🟢 0 Event Aktif`;
-      }
-
-      container.innerHTML = '';
-
-      if (activeEvents.length === 0) {
-        emptyState.classList.remove('hidden');
-        container.classList.add('hidden');
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-      container.classList.remove('hidden');
-
-      activeEvents.forEach(event => {
-        const cardHtml = `
-          <div class="bg-paper-50 rounded-3xl border-3 border-paper-dark shadow-paper overflow-hidden flex flex-col justify-between group hover:-translate-y-1 transition-all">
-            <div>
-              <!-- Gambar Event -->
-              <div class="h-44 w-full bg-stone-200 border-b-2 border-paper-dark relative overflow-hidden">
-                <img src="${event.gambar || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80'}" alt="${event.nama}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                <div class="absolute top-3 left-3 bg-emerald-500 text-white font-extrabold text-[10px] uppercase px-3 py-1 rounded-full border-2 border-paper-dark shadow-paper-sm">
-                  🟢 EVENT BERLANGSUNG
-                </div>
-              </div>
-
-              <!-- Konten Detail Event -->
-              <div class="p-6 space-y-4">
-                <h3 class="font-heading font-bold text-2xl text-stone-900 leading-snug">${event.nama}</h3>
-
-                <div class="space-y-2 text-xs font-semibold text-stone-700">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-days text-amber-600"></i>
-                    <span>${event.tanggal}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-clock text-sky-600"></i>
-                    <span>${event.waktu}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-gift text-rose-600"></i>
-                    <span class="font-bold text-emerald-700">${event.hadiah}</span>
-                  </div>
-                </div>
-
-                <p class="text-xs text-stone-600 leading-relaxed pt-2 border-t border-stone-200">
-                  ${event.deskripsi}
-                </p>
-              </div>
-            </div>
-
-            <div class="p-4 bg-paper-100 border-t-2 border-paper-border flex justify-between items-center">
-              <span class="text-[11px] font-bold text-stone-500 uppercase">KyuryuSMP Arena</span>
-              <a href="#events" onclick="openEventPage(); return false;" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-xl border-2 border-paper-dark shadow-paper-sm transition-all">
-                Detail Info
-              </a>
-            </div>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', cardHtml);
-      });
-    }
-
-    // Hash Route Handler
-    function handleHashChange() {
-      const hash = window.location.hash;
-      if (hash === '#events') {
-        renderEvents();
-        switchPage('events');
-      } else if (hash === '#ranks') {
-        switchPage('ranks');
-      } else if (hash === '#staff') {
-        switchPage('staff');
-      } else {
-        switchPage('home');
-      }
-    }
-
-    // Scroll helper dari homepage
     function navigateToSection(sectionId) {
       switchPage('home');
       setTimeout(() => {
@@ -1321,19 +1280,246 @@
       }, 100);
     }
 
-    // Staff Filter Category Functionality on Staff Page
+    window.addEventListener('hashchange', handleHashRouting);
+
+    /* ==========================================
+       3. SUPABASE DATA FETCHING (EVENTS & NEWS)
+       ========================================== */
+    async function loadEventsData() {
+      const skeleton = document.getElementById('events-loading-skeleton');
+      const container = document.getElementById('events-grid-container');
+      const countBadgeText = document.getElementById('event-count-text');
+
+      skeleton.classList.remove('hidden');
+      container.classList.add('hidden');
+
+      if (!_supabase) {
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+        container.innerHTML = `
+          <div class="col-span-full bg-paper-50 p-8 rounded-3xl border-3 border-paper-dark text-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-4xl mb-3"></i>
+            <h3 class="font-heading font-bold text-xl text-stone-900">Konfigurasi Supabase Belum Lengkap</h3>
+            <p class="text-xs text-stone-600 mt-1">Silakan masukkan SUPABASE_URL dan SUPABASE_ANON_KEY pada bagian atas file script index.html.</p>
+          </div>
+        `;
+        countBadgeText.innerText = "0 Event Aktif";
+        return;
+      }
+
+      try {
+        const { data: events, error } = await _supabase
+          .from('events')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+
+        countBadgeText.innerText = `🟢 ${events.length} Event Sedang Berlangsung`;
+
+        if (events.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full bg-paper-50 p-8 rounded-3xl border-3 border-paper-dark text-center">
+              <i class="fa-solid fa-calendar-xmark text-stone-400 text-4xl mb-3"></i>
+              <h3 class="font-heading font-bold text-xl text-stone-800">Belum Ada Event Aktif</h3>
+              <p class="text-xs text-stone-600 mt-1">Pantau terus halaman ini untuk update event mendatang!</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = events.map(ev => `
+          <div class="bg-paper-50 rounded-3xl border-3 border-paper-dark shadow-paper overflow-hidden flex flex-col justify-between hover:-translate-y-1 transition-all">
+            <div>
+              ${ev.image_url ? `
+                <div class="w-full h-52 border-b-2 border-paper-dark overflow-hidden bg-stone-200">
+                  <img src="${ev.image_url}" alt="${ev.name}" class="w-full h-full object-cover" />
+                </div>
+              ` : ''}
+
+              <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 font-extrabold text-[11px] rounded-lg border border-emerald-400 uppercase">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    🟢 SEDANG BERLANGSUNG
+                  </span>
+                  ${ev.prize ? `
+                    <span class="px-3 py-1 bg-amber-100 text-amber-900 font-extrabold text-xs rounded-lg border border-amber-400">
+                      🎁 Hadiah: ${ev.prize}
+                    </span>
+                  ` : ''}
+                </div>
+
+                <div>
+                  <h3 class="font-heading font-extrabold text-2xl text-stone-900">${ev.name}</h3>
+                  <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-stone-600 mt-2 font-mono">
+                    ${ev.date ? `<span><i class="fa-regular fa-calendar-check text-amber-600 mr-1"></i> ${ev.date}</span>` : ''}
+                    ${ev.time ? `<span><i class="fa-regular fa-clock text-amber-600 mr-1"></i> ${ev.time}</span>` : ''}
+                  </div>
+                </div>
+
+                <p class="text-xs text-stone-600 leading-relaxed font-medium">
+                  ${ev.description || 'Tidak ada deskripsi tambahan.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+        container.innerHTML = `
+          <div class="col-span-full bg-rose-50 p-6 rounded-3xl border-2 border-rose-400 text-center text-rose-900">
+            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+            <h4 class="font-bold">⚠️ Gagal memuat data event</h4>
+            <p class="text-xs mt-1">Silakan periksa koneksi internet Anda atau coba beberapa saat lagi.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function loadNewsData() {
+      const skeleton = document.getElementById('info-loading-skeleton');
+      const container = document.getElementById('info-list-container');
+
+      skeleton.classList.remove('hidden');
+      container.classList.add('hidden');
+
+      if (!_supabase) {
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+        container.innerHTML = `
+          <div class="bg-paper-50 p-8 rounded-3xl border-3 border-paper-dark text-center">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-4xl mb-3"></i>
+            <h3 class="font-heading font-bold text-xl text-stone-900">Konfigurasi Supabase Belum Lengkap</h3>
+            <p class="text-xs text-stone-600 mt-1">Silakan masukkan SUPABASE_URL dan SUPABASE_ANON_KEY pada bagian atas file script index.html.</p>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const { data: news, error } = await _supabase
+          .from('news')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+
+        if (news.length === 0) {
+          container.innerHTML = `
+            <div class="bg-paper-50 p-8 rounded-3xl border-3 border-paper-dark text-center">
+              <i class="fa-solid fa-newspaper text-stone-400 text-4xl mb-3"></i>
+              <h3 class="font-heading font-bold text-xl text-stone-800">Belum Ada Informasi</h3>
+              <p class="text-xs text-stone-600 mt-1">Pengumuman terbaru akan ditampilkan di sini.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = news.map(item => {
+          const dateFormatted = new Date(item.created_at).toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          });
+
+          return `
+            <div class="bg-paper-50 p-6 sm:p-8 rounded-3xl border-3 border-paper-dark shadow-paper space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 bg-sky-100 text-sky-800 font-extrabold text-[11px] rounded-lg border border-sky-300 uppercase">
+                  📢 INFORMASI
+                </span>
+                <span class="text-xs font-bold text-stone-500 font-mono">${dateFormatted}</span>
+              </div>
+
+              <h3 class="font-heading font-extrabold text-2xl text-stone-900">${item.title}</h3>
+
+              ${item.image_url ? `
+                <div class="w-full max-h-80 rounded-2xl border-2 border-paper-dark overflow-hidden bg-stone-100">
+                  <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover" />
+                </div>
+              ` : ''}
+
+              <p class="text-sm text-stone-700 leading-relaxed font-medium whitespace-pre-line">
+                ${item.description}
+              </p>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("Error fetching news:", err);
+        skeleton.classList.add('hidden');
+        container.classList.remove('hidden');
+        container.innerHTML = `
+          <div class="bg-rose-50 p-6 rounded-3xl border-2 border-rose-400 text-center text-rose-900">
+            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+            <h4 class="font-bold">⚠️ Gagal memuat berita/informasi</h4>
+            <p class="text-xs mt-1">Silakan coba beberapa saat lagi.</p>
+          </div>
+        `;
+      }
+    }
+
+    /* ==========================================
+       4. UTILITY FUNCTIONS & INITIALIZATION
+       ========================================== */
+    function copyToClipboard(text, successMsg) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(successMsg);
+      }).catch(err => {
+        console.error('Gagal menyalin text: ', err);
+      });
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMessage.innerText = message;
+      if (isError) {
+        toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-xl";
+      } else {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-xl";
+      }
+      
+      toast.classList.remove('hidden');
+      toast.classList.add('flex', 'animate-fade-in');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex', 'animate-fade-in');
+      }, 3000);
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
     function filterStaffPage(category) {
       const items = document.querySelectorAll('.staff-card-item');
       const tabs = ['all', 'owner', 'co-owner', 'dev-admin'];
 
       tabs.forEach(tab => {
         const btn = document.getElementById(`staff-tab-${tab}`);
-        if (tab === category) {
-          btn.classList.remove('bg-paper-50', 'text-stone-700');
-          btn.classList.add('bg-amber-500', 'text-white');
-        } else {
-          btn.classList.remove('bg-amber-500', 'text-white');
-          btn.classList.add('bg-paper-50', 'text-stone-700');
+        if (btn) {
+          if (tab === category) {
+            btn.classList.remove('bg-paper-50', 'text-stone-700');
+            btn.classList.add('bg-amber-500', 'text-white');
+          } else {
+            btn.classList.remove('bg-amber-500', 'text-white');
+            btn.classList.add('bg-paper-50', 'text-stone-700');
+          }
         }
       });
 
@@ -1348,7 +1534,6 @@
       });
     }
 
-    // Real-time Minecraft Server Status & Player Counter API
     async function fetchServerStatus() {
       const serverIP = 'play.kyuryu.my.id';
       const statusBadge = document.getElementById('server-status-badge');
@@ -1379,14 +1564,11 @@
       }
     }
 
-    // Jalankan saat load & update otomatis tiap 60 detik
     document.addEventListener('DOMContentLoaded', () => {
+      handleHashRouting();
       fetchServerStatus();
       setInterval(fetchServerStatus, 60000);
-      handleHashChange();
     });
-
-    window.addEventListener('hashchange', handleHashChange);
   </script>
 </body>
 </html>
