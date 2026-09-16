@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CASINO KYURYU - Comic Casino Arcade</title>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Canvas Confetti for Visual Effects -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-paper: #f4efe6;
+            --ink-black: #111111;
+            --comic-border: 3px solid #111111;
+            --casino-gold: #d4af37;
+            --casino-red: #d93838;
+            --panel-shadow: 5px 5px 0px #111111;
+            --btn-shadow: 3px 3px 0px #111111;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-paper);
+            background-image: radial-gradient(#d5cebf 10%, transparent 11%);
+            background-size: 12px 12px;
+            color: var(--ink-black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* COMIC CONTAINER STYLE */
+        .comic-box {
+            background: #fff;
+            border: var(--comic-border);
+            box-shadow: var(--panel-shadow);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        header {
+            background: var(--casino-gold);
+            border-bottom: var(--comic-border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 0 #111;
+        }
+
+        .logo-title {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 #fff;
+            text-transform: uppercase;
+        }
+
+        .nav-stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge-point {
+            background: var(--ink-black);
+            color: var(--casino-gold);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 2px solid #fff;
+        }
+
+        main {
+            flex: 1;
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* BUTTONS */
+        .comic-btn {
+            background: var(--casino-gold);
+            border: var(--comic-border);
+            box-shadow: var(--btn-shadow);
+            padding: 10px 18px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.1s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .comic-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #111;
+        }
+
+        .comic-btn.red { background: var(--casino-red); color: #fff; }
+
+        /* AUTH & VERIFY SECTION */
+        .auth-panel {
+            max-width: 400px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px 0;
+            border: var(--comic-border);
+            border-radius: 4px;
+            font-size: 1rem;
+            background: var(--bg-paper);
+        }
+
+        /* GAME GRID */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+        }
+
+        .game-card {
+            background: #fff;
+            border: var(--comic-border);
+            box-shadow: var(--panel-shadow);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        /* 3D GAME STAGE CONTAINER */
+        .stage-3d {
+            perspective: 800px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            border: var(--comic-border);
+            border-radius: 8px;
+            margin: 16px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-machine {
+            display: flex;
+            gap: 10px;
+            transform-style: preserve-3d;
+        }
+
+        .reel {
+            width: 60px;
+            height: 80px;
+            background: #fff;
+            border: var(--comic-border);
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .spinning {
+            animation: reelSpin 0.2s infinite linear;
+        }
+
+        @keyframes reelSpin {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(360deg); }
+        }
+
+        /* VIEWS CONTROL */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">🎰 KYURYU CASINO</div>
+        <div class="nav-stats" id="navStats" style="display:none;">
+            <div class="badge-point">⚡ <span id="userPoints">0</span> GP</div>
+            <button class="comic-btn red" onclick="logout()" style="padding: 4px 8px; font-size: 0.8rem;">Exit</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- VIEW 1: AUTHENTICATION -->
+        <section id="authView" class="view-section active">
+            <div class="comic-box auth-panel">
+                <h2 style="margin-bottom: 12px;">LOGIN MEMBER</h2>
+                <input type="email" id="authEmail" class="form-input" placeholder="Email Website">
+                <input type="password" id="authPass" class="form-input" placeholder="Password">
+                <button class="comic-btn" onclick="handleAuth('login')" style="width: 100%; margin-bottom: 8px;">Masuk</button>
+                <button class="comic-btn" onclick="handleAuth('register')" style="width: 100%; background: #fff;">Daftar Akun</button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: MINECRAFT /VERIFY LINKING -->
+        <section id="verifyView" class="view-section">
+            <div class="comic-box auth-panel">
+                <h2>LINK AKUN MINECRAFT</h2>
+                <p style="font-family: sans-serif; font-size: 0.9rem; margin: 10px 0;">Buka Minecraft Bedrock/Java, ketik <b>/verify</b> di server, dan masukkan kode hasilnya di bawah ini:</p>
+                <input type="text" id="verifyCodeInput" class="form-input" placeholder="Contoh: KYU-7F92" style="text-align: center; text-transform: uppercase;">
+                <button class="comic-btn" onclick="submitVerifyCode()" style="width: 100%;">Hubungkan Akun</button>
+            </div>
+        </section>
+
+        <!-- VIEW 3: DASHBOARD & 10 GAMES MENU -->
+        <section id="dashboardView" class="view-section">
+            <div class="comic-box">
+                <h3>STATUS MEMBER</h3>
+                <p style="font-family: sans-serif;">User: <b id="lblUsername">-</b> | MC: <b id="lblMCUsername">Belum Linked</b></p>
+            </div>
+
+            <h3 style="margin-bottom: 10px;">10 CASINO ARCADE GAMES</h3>
+            <div class="game-grid">
+                <div class="game-card" onclick="openGame('FRUIT SPIN')"><div class="game-icon">🎰</div><div>FRUIT SPIN</div></div>
+                <div class="game-card" onclick="openGame('SPASIMEN')"><div class="game-icon">👾</div><div>SPASIMEN</div></div>
+                <div class="game-card" onclick="openGame('LUCKY WHEEL')"><div class="game-icon">🎡</div><div>LUCKY WHEEL</div></div>
+                <div class="game-card" onclick="openGame('TREASURE CHEST')"><div class="game-icon">🧰</div><div>TREASURE</div></div>
+                <div class="game-card" onclick="openGame('CARD FLIP')"><div class="game-icon">🃏</div><div>CARD FLIP</div></div>
+                <div class="game-card" onclick="openGame('ROCKET RUSH')"><div class="game-icon">🚀</div><div>ROCKET RUSH</div></div>
+                <div class="game-card" onclick="openGame('GEM MATCH')"><div class="game-icon">💎</div><div>GEM MATCH</div></div>
+                <div class="game-card" onclick="openGame('DICE ARENA')"><div class="game-icon">🎲</div><div>DICE ARENA</div></div>
+                <div class="game-card" onclick="openGame('MAGIC BOX')"><div class="game-icon">🎁</div><div>MAGIC BOX</div></div>
+                <div class="game-card" onclick="openGame('KYURYU JACKPOT')"><div class="game-icon">👑</div><div>JACKPOT</div></div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: GAME ARENA STAGE -->
+        <section id="gameStageView" class="view-section">
+            <div class="comic-box">
+                <button class="comic-btn" onclick="showView('dashboardView')" style="padding: 4px 10px; margin-bottom: 10px;">← Kembali</button>
+                <h2 id="currentGameTitle">GAME TITLE</h2>
+                
+                <div class="stage-3d">
+                    <div class="slot-machine" id="slotMachine">
+                        <div class="reel" id="r1">❓</div>
+                        <div class="reel" id="r2">❓</div>
+                        <div class="reel" id="r3">❓</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+                    <input type="number" id="betInput" class="form-input" value="50" style="width: 100px; margin: 0;">
+                    <button class="comic-btn red" id="btnPlay" onclick="executePlayGame()">MAIN (BET)</button>
+                </div>
+                <p id="gameResultMsg" style="text-align: center; margin-top: 10px; font-family: sans-serif; font-weight: bold;"></p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // CONFIG SUPABASE (Client Public Credentials)
+        const SUPABASE_URL = "https://dmltyjxrvzqbavlyrzbi.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_Hl7HODK_icRPbsev29r4Hw_XTit1e_b"; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let activeGame = '';
+
+        window.onload = async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                checkMinecraftLink();
+            } else {
+                showView('authView');
+            }
+        };
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('navStats').style.display = (viewId === 'authView' || viewId === 'verifyView') ? 'none' : 'flex';
+        }
+
+        async function handleAuth(type) {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPass').value;
+            
+            let res = type === 'login' 
+                ? await supabaseClient.auth.signInWithPassword({ email, password })
+                : await supabaseClient.auth.signUp({ email, password });
+
+            if (res.error) return alert("Error: " + res.error.message);
+            checkMinecraftLink();
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            showView('authView');
+        }
+
+        async function checkMinecraftLink() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { data: mc } = await supabaseClient.from('minecraft_accounts').select('*').eq('user_id', user.id).single();
+
+            if (!mc) {
+                showView('verifyView');
+            } else {
+                document.getElementById('lblUsername').innerText = user.email.split('@')[0];
+                document.getElementById('lblMCUsername').innerText = mc.minecraft_username;
+                refreshBalance();
+                showView('dashboardView');
+            }
+        }
+
+        async function submitVerifyCode() {
+            const code = document.getElementById('verifyCodeInput').value.trim();
+            const { data, error } = await supabaseClient.rpc('link_minecraft_account', { p_code: code });
+            
+            if (error || !data.success) {
+                alert(data?.message || error.message);
+            } else {
+                alert(data.message);
+                checkMinecraftLink();
+            }
+        }
+
+        async function refreshBalance() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const { data } = await supabaseClient.from('game_points').select('balance').eq('user_id', user.id).single();
+            if (data) document.getElementById('userPoints').innerText = data.balance;
+        }
+
+        function openGame(name) {
+            activeGame = name;
+            document.getElementById('currentGameTitle').innerText = name;
+            document.getElementById('gameResultMsg').innerText = '';
+            showView('gameStageView');
+        }
+
+        async function executePlayGame() {
+            const bet = parseInt(document.getElementById('betInput').value);
+            const btn = document.getElementById('btnPlay');
+            btn.disabled = true;
+
+            const r1 = document.getElementById('r1');
+            const r2 = document.getElementById('r2');
+            const r3 = document.getElementById('r3');
+
+            r1.classList.add('spinning');
+            r2.classList.add('spinning');
+            r3.classList.add('spinning');
+
+            const { data, error } = await supabaseClient.rpc('play_arcade_game', {
+                p_game_name: activeGame,
+                p_bet: bet
+            });
+
+            setTimeout(() => {
+                r1.classList.remove('spinning');
+                r2.classList.remove('spinning');
+                r3.classList.remove('spinning');
+                btn.disabled = false;
+
+                if (error || !data.success) {
+                    document.getElementById('gameResultMsg').innerText = data?.message || error.message;
+                    document.getElementById('gameResultMsg').style.color = "red";
+                } else {
+                    const symbols = ['🍎','🍋','🍇','💎','👑'];
+                    r1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                    r2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                    r3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+
+                    if (data.net_change > 0) {
+                        confetti({ particleCount: 50, spread: 60 });
+                        document.getElementById('gameResultMsg').innerText = `MENANG! +${data.reward} Game Point (x${data.multiplier})`;
+                        document.getElementById('gameResultMsg').style.color = "green";
+                    } else {
+                        document.getElementById('gameResultMsg').innerText = `KALAH! -${bet} Game Point`;
+                        document.getElementById('gameResultMsg').style.color = "black";
+                    }
+                    refreshBalance();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
