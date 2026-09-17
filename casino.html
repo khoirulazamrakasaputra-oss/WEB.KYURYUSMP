@@ -1,407 +1,905 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CASINO KYURYU - Comic Casino Arcade</title>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Canvas Confetti for Visual Effects -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --bg-paper: #f4efe6;
-            --ink-black: #111111;
-            --comic-border: 3px solid #111111;
-            --casino-gold: #d4af37;
-            --casino-red: #d93838;
-            --panel-shadow: 5px 5px 0px #111111;
-            --btn-shadow: 3px 3px 0px #111111;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KYURYU SMP - Verification & Casino Hub</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        body {
-            background-color: var(--bg-paper);
-            background-image: radial-gradient(#d5cebf 10%, transparent 11%);
-            background-size: 12px 12px;
-            color: var(--ink-black);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+  <style>
+    :root {
+      --cabinet-width: clamp(320px, 92vw, 480px);
+      --reel-height: 110px;
+      --primary-gold: #ffd700;
+      --danger-red: #ff3333;
+      --success-green: #55ff55;
+      --bg-dark: #08080c;
+    }
 
-        /* COMIC CONTAINER STYLE */
-        .comic-box {
-            background: #fff;
-            border: var(--comic-border);
-            box-shadow: var(--panel-shadow);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
+    * { box-sizing: border-box; user-select: none; }
 
-        header {
-            background: var(--casino-gold);
-            border-bottom: var(--comic-border);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 0 #111;
-        }
+    body {
+      background: radial-gradient(circle at center, #1b1b3a 0%, #05050a 100%);
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      min-height: 100vh; margin: 0; padding: 15px; overflow-x: hidden;
+    }
 
-        .logo-title {
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0 #fff;
-            text-transform: uppercase;
-        }
+    .casino-cabinet {
+      position: relative;
+      background: linear-gradient(180deg, #d61c1c 0%, #7a0000 70%, #330000 100%);
+      padding: 20px 15px; border-radius: 36px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.3), inset 0 2px 6px rgba(255, 255, 255, 0.5), inset 0 -8px 16px rgba(0, 0, 0, 0.8);
+      border: 6px solid var(--primary-gold); text-align: center; width: var(--cabinet-width);
+    }
 
-        .nav-stats {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+    .casino-brand-title {
+      font-family: 'Arial Black', Gadget, sans-serif; font-size: 22px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 3px; margin-bottom: 12px;
+      background: linear-gradient(90deg, #ff3333, #ffd700, #ffffff, #ffd700, #ff3333);
+      background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text;
+      animation: shineGold 4s linear infinite; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
 
-        .badge-point {
-            background: var(--ink-black);
-            color: var(--casino-gold);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            border: 2px solid #fff;
-        }
+    @keyframes shineGold { to { background-position: 200% center; } }
 
-        main {
-            flex: 1;
-            padding: 16px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
+    .cabinet-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 
-        /* BUTTONS */
-        .comic-btn {
-            background: var(--casino-gold);
-            border: var(--comic-border);
-            box-shadow: var(--btn-shadow);
-            padding: 10px 18px;
-            font-size: 1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: all 0.1s ease;
-            display: inline-block;
-            text-align: center;
-        }
+    .machine-header {
+      background: linear-gradient(180deg, #fff3a3, #e6a100, #805200); color: #1a0000;
+      padding: 10px 5px; border-radius: 30px; font-size: 14px; font-weight: 900;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 2px 4px #fff; border: 2px solid #fff;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.8); flex: 1; margin-right: 8px;
+    }
 
-        .comic-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #111;
-        }
+    .mc-profile-avatar {
+      width: 42px; height: 42px; background: #2a2a3a; border: 2px solid var(--primary-gold);
+      border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5); transition: transform 0.2s ease, background 0.2s ease;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .mc-profile-avatar:hover { transform: scale(1.05); background: #3a3a5a; }
+    .mc-avatar-img { width: 100%; height: 100%; image-rendering: pixelated; }
 
-        .comic-btn.red { background: var(--casino-red); color: #fff; }
+    .balance-info {
+      background: #000; font-size: 15px; margin-bottom: 12px; color: #00ffcc;
+      padding: 6px 18px; border-radius: 20px; border: 2px solid #00ffcc;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.4); display: inline-block;
+      font-family: 'Courier New', Courier, monospace; font-weight: bold;
+    }
 
-        /* AUTH & VERIFY SECTION */
-        .auth-panel {
-            max-width: 400px;
-            margin: 40px auto;
-            text-align: center;
-        }
+    .bet-control-box {
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;
+      background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 12px; border: 1px solid #444;
+    }
+    .bet-label { font-size: 11px; color: var(--primary-gold); font-weight: bold; }
+    .bet-input {
+      width: 90px; background: #111; border: 1px solid var(--primary-gold); color: #fff;
+      text-align: center; border-radius: 6px; font-weight: bold; padding: 4px;
+      font-family: 'Courier New', Courier, monospace;
+    }
 
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 16px 0;
-            border: var(--comic-border);
-            border-radius: 4px;
-            font-size: 1rem;
-            background: var(--bg-paper);
-        }
+    .game-screen {
+      display: none; background: var(--bg-dark); padding: 20px 15px 15px 15px;
+      border-radius: 20px; border: 3px solid #d4af37; box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+      margin-bottom: 15px; min-height: 260px; justify-content: center; align-items: center;
+      flex-direction: column; position: relative; overflow: hidden;
+    }
+    .game-screen.active { display: flex; }
 
-        /* GAME GRID */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 14px;
-        }
+    .back-btn {
+      position: absolute; top: 10px; left: 10px; background: linear-gradient(180deg, #444, #111);
+      color: var(--primary-gold); border: 1px solid var(--primary-gold); padding: 5px 10px;
+      border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; z-index: 20;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: all 0.2s ease;
+    }
+    .back-btn:active { transform: scale(0.95); }
 
-        .game-card {
-            background: #fff;
-            border: var(--comic-border);
-            box-shadow: var(--panel-shadow);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+    .verify-box { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .verify-title { font-size: 16px; font-weight: 900; color: var(--primary-gold); letter-spacing: 1px; }
+    .verify-desc { font-size: 11px; color: #ccc; line-height: 1.4; margin-bottom: 5px; }
+    .verify-input {
+      width: 80%; padding: 10px; background: #000; border: 2px solid var(--primary-gold);
+      border-radius: 8px; color: #fff; font-size: 18px; font-family: 'Courier New', Courier, monospace;
+      text-align: center; letter-spacing: 3px; outline: none; text-transform: uppercase;
+    }
+    .verify-input:focus { box-shadow: 0 0 10px var(--primary-gold); }
 
-        .game-card:hover {
-            transform: translateY(-4px);
-        }
+    .lobby-menu { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 5px 0; }
+    .lobby-option-btn {
+      background: linear-gradient(180deg, #2a2a3a, #11111d); border: 2px solid var(--primary-gold);
+      border-radius: 14px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between;
+      color: #fff; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: all 0.2s ease; text-transform: uppercase;
+    }
+    .lobby-option-btn:hover {
+      background: linear-gradient(180deg, #ffd700, #ff8800); color: #000;
+      transform: translateY(-2px); box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    }
+    .lobby-option-btn .btn-icon { font-size: 18px; display: flex; align-items: center; justify-content: center; width: 30px; }
 
-        .game-icon {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
-        }
+    .mc-profile-card {
+      background: linear-gradient(180deg, #181824, #0b0b12); border: 2px solid var(--success-green);
+      border-radius: 16px; padding: 12px; width: 100%; box-shadow: 0 0 15px rgba(85, 255, 85, 0.2); text-align: left;
+    }
+    .mc-profile-title {
+      font-size: 12px; color: var(--success-green); font-weight: bold; text-transform: uppercase;
+      margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .mc-stat-row {
+      display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.4);
+      padding: 6px 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #333;
+    }
+    .mc-stat-label { font-size: 11px; color: #aaa; font-weight: bold; }
+    .mc-stat-value { font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: bold; color: var(--primary-gold); }
 
-        /* 3D GAME STAGE CONTAINER */
-        .stage-3d {
-            perspective: 800px;
-            height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #222;
-            border: var(--comic-border);
-            border-radius: 8px;
-            margin: 16px 0;
-            position: relative;
-            overflow: hidden;
-        }
+    .slot-machine { display: flex; gap: 10px; width: 100%; height: var(--reel-height); margin-top: 15px; }
+    .reel {
+      flex: 1; height: 100%; background: linear-gradient(180deg, #111 0%, #eee 25%, #fff 50%, #eee 75%, #111 100%);
+      border: 3px solid var(--primary-gold); border-radius: 10px; overflow: hidden; position: relative;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+    }
+    .reel-strip { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; transition: transform 0.1s ease-out; }
+    .css-symbol { width: 100%; height: var(--reel-height); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .symbol-seven { font-family: 'Arial Black', sans-serif; font-size: 46px; font-weight: 900; color: #e60000; text-shadow: 2px 2px 0 #800000, -1px -1px 0 #fff; }
+    .symbol-diamond { width: 32px; height: 32px; background: linear-gradient(135deg, #00ffff, #0088cc); transform: rotate(45deg); border: 2px solid #fff; box-shadow: 0 0 10px #00ffff; }
+    .symbol-heart { width: 28px; height: 28px; background-color: #ff0055; transform: rotate(-45deg); margin-top: 8px; position: relative; }
+    .symbol-heart::before, .symbol-heart::after { content: ""; width: 28px; height: 28px; background-color: #ff0055; border-radius: 50%; position: absolute; }
+    .symbol-heart::before { top: -14px; left: 0; } .symbol-heart::after { left: 14px; top: 0; }
+    .symbol-bell, .symbol-cherry { font-size: 38px; }
 
-        .slot-machine {
-            display: flex;
-            gap: 10px;
-            transform-style: preserve-3d;
-        }
+    .wheel-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 10px; }
+    .wheel-container { position: relative; width: 140px; height: 140px; }
+    .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 16px solid #ffff00; z-index: 10; }
+    .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--primary-gold); transition: transform 3s cubic-bezier(0.15, 0.85, 0.15, 1); background: conic-gradient(#ff3333 0deg 60deg, #222222 60deg 120deg, #ff9900 120deg 180deg, #33cc33 180deg 240deg, #9900cc 240deg 300deg, #222222 300deg 360deg); position: relative; }
+    .wheel-label { position: absolute; top: 50%; left: 50%; font-size: 11px; font-weight: 900; color: #fff; transform-origin: 0 0; }
+    .label-1 { transform: rotate(30deg) translate(30px, -50%); } .label-2 { transform: rotate(90deg) translate(30px, -50%); color: #ff4444; }
+    .label-3 { transform: rotate(150deg) translate(30px, -50%); } .label-4 { transform: rotate(210deg) translate(30px, -50%); }
+    .label-5 { transform: rotate(270deg) translate(30px, -50%); color: #ffff00; } .label-6 { transform: rotate(330deg) translate(30px, -50%); color: #ff4444; }
 
-        .reel {
-            width: 60px;
-            height: 80px;
-            background: #fff;
-            border: var(--comic-border);
-            font-size: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-        }
+    .card-display { width: 90px; height: 130px; background: #fff; color: #111; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; border: 1px solid #ccc; margin-top: 10px; }
+    .card-corner { font-size: 14px; font-weight: bold; line-height: 1; display: flex; flex-direction: column; align-items: center; }
+    .card-center-suit { font-size: 36px; align-self: center; }
+    .card-red { color: #d61c1c; } .card-black { color: #111; }
 
-        .spinning {
-            animation: reelSpin 0.2s infinite linear;
-        }
+    .coin-container { perspective: 1000px; margin-top: 10px; }
+    .css-coin { width: 90px; height: 90px; background: radial-gradient(circle at 35% 35%, #ffe600, #b8860b); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 4px solid #fff; transition: transform 0.6s; transform-style: preserve-3d; }
+    .coin-inner { width: 74px; height: 74px; border: 2px dashed #b8860b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #4a3000; text-transform: uppercase; }
 
-        @keyframes reelSpin {
-            0% { transform: rotateX(0deg); }
-            100% { transform: rotateX(360deg); }
-        }
+    .logo-slot { font-family: 'Arial Black', sans-serif; font-size: 16px; color: #ff0055; }
+    .logo-wheel { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--primary-gold); background: conic-gradient(#ff3333 0deg 90deg, #ff9900 90deg 180deg, #33cc33 180deg 270deg, #9900cc 270deg 360deg); }
+    .logo-card { width: 16px; height: 22px; background: #fff; border-radius: 3px; color: #d61c1c; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+    .logo-coin { width: 20px; height: 20px; background: radial-gradient(circle at 35% 35%, #ffe600, #b8860b); border-radius: 50%; border: 1px solid #fff; font-size: 10px; font-weight: 900; color: #4a3000; display: flex; align-items: center; justify-content: center; }
 
-        /* VIEWS CONTROL */
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-    </style>
+    .controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    button.action-btn { background: linear-gradient(180deg, #ffcc00, #ff8800); color: #000; border: 2px solid #fff; padding: 8px 14px; font-size: 12px; font-weight: 900; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 0 #995200; }
+    button.action-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #995200; }
+    button:disabled { background: #444 !important; border-color: #666 !important; color: #888 !important; box-shadow: none !important; cursor: not-allowed; opacity: 0.6; }
+    .btn-logout { background: linear-gradient(180deg, #ff3333, #990000) !important; color: #fff !important; margin-top: 10px; }
+
+    .message { margin-top: 12px; font-size: 12px; font-weight: bold; min-height: 20px; color: #fff; text-shadow: 0 0 5px var(--primary-gold); }
+    .error-msg { color: #ff4444 !important; text-shadow: 0 0 8px #ff0000 !important; }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-title">🎰 KYURYU CASINO</div>
-        <div class="nav-stats" id="navStats" style="display:none;">
-            <div class="badge-point">⚡ <span id="userPoints">0</span> GP</div>
-            <button class="comic-btn red" onclick="logout()" style="padding: 4px 8px; font-size: 0.8rem;">Exit</button>
+  <div class="casino-cabinet">
+    <div class="casino-brand-title">Kyuryu Casino</div>
+
+    <div class="cabinet-top-bar">
+      <div class="machine-header" id="game-title">VERIFIKASI SERVER</div>
+      <div class="mc-profile-avatar" id="avatar-btn" onclick="UI.switchGame('mc-profile')" style="display:none;" title="Profil Minecraft">
+        <img id="player-avatar-img" class="mc-avatar-img" src="https://mc-heads.net/avatar/steve/42" alt="Avatar">
+      </div>
+    </div>
+    
+    <div class="balance-info" id="top-score-box" style="display:none;">
+      VAULT BAL: $<span id="vault-money">0.00</span>
+    </div>
+
+    <div class="bet-control-box" id="bet-box" style="display:none;">
+      <span class="bet-label">TARUHAN: $</span>
+      <input type="number" id="bet-amount-input" class="bet-input" value="10" min="1" step="1">
+    </div>
+
+    <!-- SCREEN 0: VERIFICATION -->
+    <div class="game-screen active" id="screen-verify">
+      <div class="verify-box">
+        <div class="verify-title">KYURYU SMP LOGIN</div>
+        <div class="verify-desc">
+          Ketik <b>/verify</b> di server Minecraft Kyuryu SMP untuk mendapatkan Kode Verifikasi 6 digit.
         </div>
-    </header>
+        <input type="text" id="verify-code-input" class="verify-input" maxlength="6" placeholder="X8K2P9" autocomplete="off" spellcheck="false">
+        <button class="action-btn" id="btn-do-verify" onclick="Auth.handleVerification()">VERIFIKASI & MASUK</button>
+      </div>
+    </div>
 
-    <main>
-        <!-- VIEW 1: AUTHENTICATION -->
-        <section id="authView" class="view-section active">
-            <div class="comic-box auth-panel">
-                <h2 style="margin-bottom: 12px;">LOGIN MEMBER</h2>
-                <input type="email" id="authEmail" class="form-input" placeholder="Email Website">
-                <input type="password" id="authPass" class="form-input" placeholder="Password">
-                <button class="comic-btn" onclick="handleAuth('login')" style="width: 100%; margin-bottom: 8px;">Masuk</button>
-                <button class="comic-btn" onclick="handleAuth('register')" style="width: 100%; background: #fff;">Daftar Akun</button>
-            </div>
-        </section>
+    <!-- SCREEN 1: LOBBY -->
+    <div class="game-screen" id="screen-lobby">
+      <div class="lobby-menu">
+        <button class="lobby-option-btn" onclick="UI.switchGame('slot')">
+          <span class="btn-icon"><span class="logo-slot">777</span></span>
+          <span>Jackpot Casino</span>
+          <span>➔</span>
+        </button>
+        <button class="lobby-option-btn" onclick="UI.switchGame('wheel')">
+          <span class="btn-icon"><span class="logo-wheel"></span></span>
+          <span>Roda Keberuntungan</span>
+          <span>➔</span>
+        </button>
+        <button class="lobby-option-btn" onclick="UI.switchGame('card')">
+          <span class="btn-icon"><span class="logo-card">A</span></span>
+          <span>Tebak Kartu</span>
+          <span>➔</span>
+        </button>
+        <button class="lobby-option-btn" onclick="UI.switchGame('coin')">
+          <span class="btn-icon"><span class="logo-coin">$</span></span>
+          <span>Lempar Koin</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </div>
 
-        <!-- VIEW 2: MINECRAFT /VERIFY LINKING -->
-        <section id="verifyView" class="view-section">
-            <div class="comic-box auth-panel">
-                <h2>LINK AKUN MINECRAFT</h2>
-                <p style="font-family: sans-serif; font-size: 0.9rem; margin: 10px 0;">Buka Minecraft Bedrock/Java, ketik <b>/verify</b> di server, dan masukkan kode hasilnya di bawah ini:</p>
-                <input type="text" id="verifyCodeInput" class="form-input" placeholder="Contoh: KYU-7F92" style="text-align: center; text-transform: uppercase;">
-                <button class="comic-btn" onclick="submitVerifyCode()" style="width: 100%;">Hubungkan Akun</button>
-            </div>
-        </section>
+    <!-- SCREEN 2: PROFILE & STATUS SERVER -->
+    <div class="game-screen" id="screen-mc-profile">
+      <button class="back-btn" onclick="UI.switchGame('lobby')">‹ Kembali</button>
+      <div class="mc-profile-card">
+        <div class="mc-profile-title">
+          <span>Kyuryu SMP Status</span>
+          <span id="server-status-dot" style="color: #ff3333;">● Offline</span>
+        </div>
+        <div class="mc-stat-row">
+          <span class="mc-stat-label">Username:</span>
+          <span class="mc-stat-value" id="prof-username">-</span>
+        </div>
+        <div class="mc-stat-row">
+          <span class="mc-stat-label">Rank In-Game:</span>
+          <span class="mc-stat-value" id="prof-rank">Player</span>
+        </div>
+        <div class="mc-stat-row">
+          <span class="mc-stat-label">UUID Minecraft:</span>
+          <span class="mc-stat-value" id="prof-uuid" style="font-size: 9px;">-</span>
+        </div>
+        <div class="mc-stat-row">
+          <span class="mc-stat-label">Server Players:</span>
+          <span class="mc-stat-value" id="prof-online-players">0 / 0</span>
+        </div>
+        <div class="mc-stat-row">
+          <span class="mc-stat-label">Server TPS:</span>
+          <span class="mc-stat-value" id="prof-tps">20.0</span>
+        </div>
+        <button class="action-btn btn-logout" onclick="Auth.logout()">LOGOUT & REVOKE</button>
+      </div>
+    </div>
 
-        <!-- VIEW 3: DASHBOARD & 10 GAMES MENU -->
-        <section id="dashboardView" class="view-section">
-            <div class="comic-box">
-                <h3>STATUS MEMBER</h3>
-                <p style="font-family: sans-serif;">User: <b id="lblUsername">-</b> | MC: <b id="lblMCUsername">Belum Linked</b></p>
-            </div>
+    <!-- GAME 1: SLOT -->
+    <div class="game-screen" id="screen-slot">
+      <button class="back-btn" onclick="UI.switchGame('lobby')">‹ Kembali</button>
+      <div class="slot-machine">
+        <div class="reel"><div class="reel-strip" id="reel1"></div></div>
+        <div class="reel"><div class="reel-strip" id="reel2"></div></div>
+        <div class="reel"><div class="reel-strip" id="reel3"></div></div>
+      </div>
+    </div>
 
-            <h3 style="margin-bottom: 10px;">10 CASINO ARCADE GAMES</h3>
-            <div class="game-grid">
-                <div class="game-card" onclick="openGame('FRUIT SPIN')"><div class="game-icon">🎰</div><div>FRUIT SPIN</div></div>
-                <div class="game-card" onclick="openGame('SPASIMEN')"><div class="game-icon">👾</div><div>SPASIMEN</div></div>
-                <div class="game-card" onclick="openGame('LUCKY WHEEL')"><div class="game-icon">🎡</div><div>LUCKY WHEEL</div></div>
-                <div class="game-card" onclick="openGame('TREASURE CHEST')"><div class="game-icon">🧰</div><div>TREASURE</div></div>
-                <div class="game-card" onclick="openGame('CARD FLIP')"><div class="game-icon">🃏</div><div>CARD FLIP</div></div>
-                <div class="game-card" onclick="openGame('ROCKET RUSH')"><div class="game-icon">🚀</div><div>ROCKET RUSH</div></div>
-                <div class="game-card" onclick="openGame('GEM MATCH')"><div class="game-icon">💎</div><div>GEM MATCH</div></div>
-                <div class="game-card" onclick="openGame('DICE ARENA')"><div class="game-icon">🎲</div><div>DICE ARENA</div></div>
-                <div class="game-card" onclick="openGame('MAGIC BOX')"><div class="game-icon">🎁</div><div>MAGIC BOX</div></div>
-                <div class="game-card" onclick="openGame('KYURYU JACKPOT')"><div class="game-icon">👑</div><div>JACKPOT</div></div>
-            </div>
-        </section>
+    <!-- GAME 2: WHEEL -->
+    <div class="game-screen" id="screen-wheel">
+      <button class="back-btn" onclick="UI.switchGame('lobby')">‹ Kembali</button>
+      <div class="wheel-wrapper">
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <div class="wheel" id="wheel-disc">
+            <div class="wheel-label label-1">2X</div>
+            <div class="wheel-label label-2">0X</div>
+            <div class="wheel-label label-3">1.5X</div>
+            <div class="wheel-label label-4">0.5X</div>
+            <div class="wheel-label label-5">3X</div>
+            <div class="wheel-label label-6">0X</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <!-- VIEW 4: GAME ARENA STAGE -->
-        <section id="gameStageView" class="view-section">
-            <div class="comic-box">
-                <button class="comic-btn" onclick="showView('dashboardView')" style="padding: 4px 10px; margin-bottom: 10px;">← Kembali</button>
-                <h2 id="currentGameTitle">GAME TITLE</h2>
-                
-                <div class="stage-3d">
-                    <div class="slot-machine" id="slotMachine">
-                        <div class="reel" id="r1">❓</div>
-                        <div class="reel" id="r2">❓</div>
-                        <div class="reel" id="r3">❓</div>
-                    </div>
-                </div>
+    <!-- GAME 3: CARD -->
+    <div class="game-screen" id="screen-card">
+      <button class="back-btn" onclick="UI.switchGame('lobby')">‹ Kembali</button>
+      <div class="card-display" id="card-box">
+        <div class="card-corner card-red">
+          <span id="card-val-top">7</span>
+          <span id="card-suit-top">♥</span>
+        </div>
+        <div class="card-center-suit card-red" id="card-suit-center">♥</div>
+        <div class="card-corner card-red" style="transform: rotate(180deg);">
+          <span id="card-val-bot">7</span>
+          <span id="card-suit-bot">♥</span>
+        </div>
+      </div>
+    </div>
 
-                <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
-                    <input type="number" id="betInput" class="form-input" value="50" style="width: 100px; margin: 0;">
-                    <button class="comic-btn red" id="btnPlay" onclick="executePlayGame()">MAIN (BET)</button>
-                </div>
-                <p id="gameResultMsg" style="text-align: center; margin-top: 10px; font-family: sans-serif; font-weight: bold;"></p>
-            </div>
-        </section>
-    </main>
+    <!-- GAME 4: COIN -->
+    <div class="game-screen" id="screen-coin">
+      <button class="back-btn" onclick="UI.switchGame('lobby')">‹ Kembali</button>
+      <div class="coin-container">
+        <div class="css-coin" id="coin-element">
+          <div class="coin-inner" id="coin-text">DEPAN</div>
+        </div>
+      </div>
+    </div>
 
-    <script>
-        // CONFIG SUPABASE (Client Public Credentials)
-        const SUPABASE_URL = "https://dmltyjxrvzqbavlyrzbi.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_Hl7HODK_icRPbsev29r4Hw_XTit1e_b"; 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div class="controls" id="controls-container"></div>
+    <div class="message" id="message">Masukkan kode verifikasi Minecraft Anda.</div>
+  </div>
 
-        let activeGame = '';
+  <script>
+    /* ==========================================================================
+       1. CONFIGURATION & STATE
+       ========================================================================== */
+    const CONFIG = {
+      SUPABASE_URL: "https://dmltyjxrvzqbavlyrzbi.supabase.co",
+      SUPABASE_ANON_KEY: "sb_publishable_Hl7HODK_icRPbsev29r4Hw_XTit1e_b",
+      SESSION_KEY_NAME: "kyuryu_web_session_token"
+    };
 
-        window.onload = async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                checkMinecraftLink();
-            } else {
-                showView('authView');
+    let db = null;
+    try {
+      if (typeof supabase !== 'undefined' && CONFIG.SUPABASE_URL.startsWith("http")) {
+        db = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      }
+    } catch (err) {
+      console.error("Gagal menginisialisasi Supabase SDK:", err);
+    }
+
+    const State = {
+      session: null,
+      player: null,
+      vaultMoney: 0.00,
+      currentGame: 'verify',
+      isPlaying: false
+    };
+
+    /* ==========================================================================
+       2. AUDIO SYSTEM
+       ========================================================================== */
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() { if (!audioCtx) audioCtx = new AudioCtx(); }
+    function playTone(freq, type, duration) {
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playWinSound() {
+      [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.25), i * 90));
+    }
+    function playLoseSound() {
+      [220, 180, 130].forEach((f, i) => setTimeout(() => playTone(f, 'sawtooth', 0.2), i * 100));
+    }
+    function playClickSound() { playTone(600, 'sine', 0.05); }
+
+    /* ==========================================================================
+       3. AUTHENTICATION & VAULT SESSION
+       ========================================================================== */
+    class Auth {
+      static async initSession() {
+        const savedToken = localStorage.getItem(CONFIG.SESSION_KEY_NAME);
+        if (!savedToken || !db) {
+          UI.switchGame('verify');
+          return;
+        }
+
+        UI.setMessage("Memvalidasi sesi Casino...");
+        try {
+          const { data, error } = await db.rpc('validate_web_session', { p_token: savedToken });
+          
+          if (error || !data || data.length === 0) {
+            this.clearSession();
+            UI.setMessage("Sesi telah berakhir / tidak valid. Silakan verifikasi ulang.", true);
+            UI.switchGame('verify');
+            return;
+          }
+
+          const sessionData = data[0];
+          State.session = { token: savedToken };
+          State.player = {
+            id: sessionData.out_player_id || sessionData.player_id,
+            uuid: sessionData.out_minecraft_uuid || sessionData.minecraft_uuid,
+            username: sessionData.out_minecraft_username || sessionData.minecraft_username,
+            rank: sessionData.out_rank || 'Player'
+          };
+          State.vaultMoney = parseFloat(sessionData.out_money || 0);
+
+          this.onAuthSuccess();
+        } catch (e) {
+          this.clearSession();
+          UI.switchGame('verify');
+        }
+      }
+
+      static async handleVerification() {
+        const inputEl = document.getElementById('verify-code-input');
+        const btnEl = document.getElementById('btn-do-verify');
+        const code = inputEl.value.trim().toUpperCase();
+
+        if (code.length < 5) {
+          UI.setMessage("Masukkan kode verifikasi yang valid!", true);
+          return;
+        }
+
+        if (!db) {
+          UI.setMessage("Gagal terhubung ke database. Cek koneksi Anda!", true);
+          return;
+        }
+
+        btnEl.disabled = true;
+        btnEl.innerText = "PEMERIKSAAN...";
+        UI.setMessage("Memeriksa kode verifikasi...");
+        playClickSound();
+
+        try {
+          const { data, error } = await db.rpc('consume_verify_code', { p_code: code });
+
+          if (error || !data || data.length === 0) {
+            UI.setMessage(error ? error.message : "Kode verifikasi salah atau sudah kadaluwarsa!", true);
+            playLoseSound();
+            btnEl.disabled = false;
+            btnEl.innerText = "VERIFIKASI & MASUK";
+            return;
+          }
+
+          const result = data[0];
+          const sessionToken = result.out_session_token;
+          
+          localStorage.setItem(CONFIG.SESSION_KEY_NAME, sessionToken);
+          State.session = { token: sessionToken };
+          State.player = {
+            id: result.out_player_id,
+            uuid: result.out_minecraft_uuid,
+            username: result.out_minecraft_username,
+            rank: 'Player'
+          };
+          State.vaultMoney = parseFloat(result.out_money || 0);
+
+          playWinSound();
+          UI.setMessage("Verifikasi Berhasil! Selamat datang.");
+          this.onAuthSuccess();
+        } catch (e) {
+          UI.setMessage("Terjadi kesalahan sistem saat menghubungi database.", true);
+          playLoseSound();
+        } finally {
+          btnEl.disabled = false;
+          btnEl.innerText = "VERIFIKASI & MASUK";
+        }
+      }
+
+      static onAuthSuccess() {
+        document.getElementById('avatar-btn').style.display = 'flex';
+        document.getElementById('top-score-box').style.display = 'inline-block';
+        document.getElementById('player-avatar-img').src = `https://mc-heads.net/avatar/${State.player.uuid}/42`;
+        
+        document.getElementById('prof-username').innerText = State.player.username;
+        document.getElementById('prof-uuid').innerText = State.player.uuid;
+        document.getElementById('prof-rank').innerText = State.player.rank;
+
+        UI.updateVaultBalance(State.vaultMoney);
+        ServerStatusService.fetchStatus();
+        ServerStatusService.subscribeRealtime();
+        this.subscribePlayerMoneyRealtime();
+        UI.switchGame('lobby');
+      }
+
+      static subscribePlayerMoneyRealtime() {
+        if (!db || !State.player) return;
+        db.channel('public:players:' + State.player.id)
+          .on('postgres_changes', { 
+            event: 'UPDATE', schema: 'public', table: 'players', filter: `id=eq.${State.player.id}` 
+          }, payload => {
+            if (payload.new && payload.new.money !== undefined) {
+              UI.updateVaultBalance(parseFloat(payload.new.money));
             }
-        };
+          })
+          .subscribe();
+      }
 
-        function showView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            document.getElementById('navStats').style.display = (viewId === 'authView' || viewId === 'verifyView') ? 'none' : 'flex';
+      static async logout() {
+        if (State.session && db) {
+          try { await db.rpc('revoke_web_session', { p_token: State.session.token }); } catch(e){}
+        }
+        this.clearSession();
+        UI.switchGame('verify');
+        UI.setMessage("Anda telah logout.");
+      }
+
+      static clearSession() {
+        localStorage.removeItem(CONFIG.SESSION_KEY_NAME);
+        State.session = null; State.player = null;
+        document.getElementById('avatar-btn').style.display = 'none';
+        document.getElementById('top-score-box').style.display = 'none';
+        document.getElementById('bet-box').style.display = 'none';
+      }
+    }
+
+    /* ==========================================================================
+       4. REALTIME SERVER STATUS
+       ========================================================================== */
+    class ServerStatusService {
+      static async fetchStatus() {
+        if (!db) return;
+        const { data } = await db.from('server_status').select('*').eq('id', 1).single();
+        if (data) this.updateUI(data); else this.updateOfflineUI();
+      }
+
+      static subscribeRealtime() {
+        if (!db) return;
+        db.channel('public:server_status')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'server_status' }, payload => {
+            if (payload.new) this.updateUI(payload.new);
+          }).subscribe();
+      }
+
+      static updateUI(data) {
+        const dot = document.getElementById('server-status-dot');
+        if (data.online) {
+          dot.innerText = "● Online"; dot.style.color = "#55ff55";
+        } else { this.updateOfflineUI(); return; }
+
+        document.getElementById('prof-online-players').innerText = `${data.players_online} / ${data.max_players}`;
+        document.getElementById('prof-tps').innerText = Number(data.tps).toFixed(1);
+      }
+
+      static updateOfflineUI() {
+        const dot = document.getElementById('server-status-dot');
+        dot.innerText = "● Offline"; dot.style.color = "#ff3333";
+        document.getElementById('prof-online-players').innerText = "Data tidak tersedia";
+        document.getElementById('prof-tps').innerText = "-";
+      }
+    }
+
+    /* ==========================================================================
+       5. UI CONTROLLER
+       ========================================================================== */
+    class UI {
+      static setMessage(msg, isError = false) {
+        const msgEl = document.getElementById('message');
+        msgEl.innerText = msg;
+        if (isError) msgEl.classList.add('error-msg');
+        else msgEl.classList.remove('error-msg');
+      }
+
+      static updateVaultBalance(amount) {
+        State.vaultMoney = amount;
+        document.getElementById('vault-money').innerText = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      static switchGame(gameType) {
+        if (State.isPlaying) return;
+        if (!State.session && gameType !== 'verify') {
+          this.switchGame('verify'); return;
         }
 
-        async function handleAuth(type) {
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPass').value;
-            
-            let res = type === 'login' 
-                ? await supabaseClient.auth.signInWithPassword({ email, password })
-                : await supabaseClient.auth.signUp({ email, password });
+        playClickSound();
+        State.currentGame = gameType;
 
-            if (res.error) return alert("Error: " + res.error.message);
-            checkMinecraftLink();
+        document.querySelectorAll('.game-screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(`screen-${gameType}`).classList.add('active');
+
+        const titleEl = document.getElementById('game-title');
+        const controlsEl = document.getElementById('controls-container');
+        const betBox = document.getElementById('bet-box');
+
+        this.setMessage("");
+
+        if (gameType === 'verify' || gameType === 'lobby' || gameType === 'mc-profile') {
+          betBox.style.display = "none";
+        } else {
+          betBox.style.display = "flex";
         }
 
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            showView('authView');
+        if (gameType === 'verify') {
+          titleEl.innerText = "VERIFIKASI SERVER"; controlsEl.innerHTML = "";
+          this.setMessage("Masukkan kode verifikasi dari Minecraft.");
+        } else if (gameType === 'lobby') {
+          titleEl.innerText = "CASINO LOBBY"; controlsEl.innerHTML = "";
+          this.setMessage(`Selamat datang, ${State.player.username}! Pilih taruhan.`);
+        } else if (gameType === 'mc-profile') {
+          titleEl.innerText = "PROFIL MINECRAFT"; controlsEl.innerHTML = "";
+        } else if (gameType === 'slot') {
+          titleEl.innerText = "JACKPOT CASINO";
+          controlsEl.innerHTML = `<button class="action-btn" onclick="GameEngine.playSlot()">SPIN SLOT</button>`;
+          GameEngine.initSlotDisplay();
+        } else if (gameType === 'wheel') {
+          titleEl.innerText = "RODA KEBERUNTUNGAN";
+          controlsEl.innerHTML = `<button class="action-btn" onclick="GameEngine.spinWheel()">PUTAR RODA</button>`;
+        } else if (gameType === 'card') {
+          titleEl.innerText = "TEBAK KARTU";
+          controlsEl.innerHTML = `
+            <button class="action-btn" onclick="GameEngine.playCard('high')">HIGHER ↑</button>
+            <button class="action-btn" onclick="GameEngine.playCard('low')">LOWER ↓</button>
+          `;
+          GameEngine.initCardGame();
+        } else if (gameType === 'coin') {
+          titleEl.innerText = "LEMPAR KOIN";
+          controlsEl.innerHTML = `
+            <button class="action-btn" onclick="GameEngine.playCoin('DEPAN')">DEPAN</button>
+            <button class="action-btn" onclick="GameEngine.playCoin('BELAKANG')">BELAKANG</button>
+          `;
+        }
+      }
+    }
+
+    /* ==========================================================================
+       6. GAME ENGINE (40% WIN / 60% LOSE PROBABILITY ROUTER)
+       ========================================================================== */
+    const slotSymbols = ['seven', 'diamond', 'heart', 'bell', 'cherry'];
+
+    class GameEngine {
+      static getBetAmount() {
+        const val = parseFloat(document.getElementById('bet-amount-input').value);
+        if (isNaN(val) || val <= 0) {
+          UI.setMessage("Masukkan jumlah taruhan Vault yang valid!", true);
+          return null;
+        }
+        if (val > State.vaultMoney) {
+          UI.setMessage("Saldo Vault Anda tidak mencukupi!", true);
+          return null;
+        }
+        return val;
+      }
+
+      static async executeBetRPC(betAmount, winAmount, gameType) {
+        try {
+          const { data, error } = await db.rpc('process_casino_bet', {
+            p_token: State.session.token,
+            p_bet_amount: betAmount,
+            p_win_amount: winAmount,
+            p_game_type: gameType
+          });
+
+          if (error || !data || data.length === 0 || !data[0].success) {
+            UI.setMessage(data && data[0] ? data[0].message : "Gagal memproses taruhan di Vault Server!", true);
+            return null;
+          }
+
+          UI.updateVaultBalance(parseFloat(data[0].new_balance));
+          return true;
+        } catch (e) {
+          UI.setMessage("Terjadi kesalahan jaringan Vault Casino.", true);
+          return null;
+        }
+      }
+
+      // 40% Chance Win Evaluator
+      static checkWin40Percent() {
+        return Math.random() < 0.40;
+      }
+
+      /* GAME 1: SLOT MACHINE */
+      static getSymbolHTML(type) {
+        if (type === 'seven') return `<div class="css-symbol"><div class="symbol-seven">7</div></div>`;
+        if (type === 'diamond') return `<div class="css-symbol"><div class="symbol-diamond"></div></div>`;
+        if (type === 'heart') return `<div class="css-symbol"><div class="symbol-heart"></div></div>`;
+        if (type === 'bell') return `<div class="css-symbol"><div class="symbol-bell">🔔</div></div>`;
+        if (type === 'cherry') return `<div class="css-symbol"><div class="symbol-cherry">🍒</div></div>`;
+        return '';
+      }
+
+      static initSlotDisplay() {
+        ['reel1', 'reel2', 'reel3'].forEach(id => {
+          const strip = document.getElementById(id);
+          strip.style.transition = 'none'; strip.style.transform = 'translateY(0px)';
+          strip.innerHTML = this.getSymbolHTML('seven');
+        });
+      }
+
+      static async playSlot() {
+        if (State.isPlaying) return;
+        const bet = this.getBetAmount();
+        if (!bet) return;
+
+        State.isPlaying = true;
+        UI.setMessage("Memutar Slot Casino...");
+
+        const isWin = this.checkWin40Percent();
+        let winMultiplier = isWin ? 3 : 0; // 3x Taruhan jika menang
+        let targetResults = [];
+
+        if (isWin) {
+          const sym = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+          targetResults = [sym, sym, sym];
+        } else {
+          let pool = [...slotSymbols].sort(() => Math.random() - 0.5);
+          targetResults = [pool[0], pool[1], pool[2]];
         }
 
-        async function checkMinecraftLink() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data: mc } = await supabaseClient.from('minecraft_accounts').select('*').eq('user_id', user.id).single();
+        const reelHeight = 110;
+        const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
 
-            if (!mc) {
-                showView('verifyView');
-            } else {
-                document.getElementById('lblUsername').innerText = user.email.split('@')[0];
-                document.getElementById('lblMCUsername').innerText = mc.minecraft_username;
-                refreshBalance();
-                showView('dashboardView');
-            }
+        reels.forEach((reelStrip, i) => {
+          let stripHTML = '';
+          const spinLength = 12 + i * 5;
+          for (let k = 0; k < spinLength; k++) {
+            stripHTML += this.getSymbolHTML(slotSymbols[Math.floor(Math.random() * slotSymbols.length)]);
+          }
+          stripHTML += this.getSymbolHTML(targetResults[i]);
+
+          reelStrip.style.transition = 'none';
+          reelStrip.style.transform = 'translateY(0px)';
+          reelStrip.innerHTML = stripHTML;
+
+          setTimeout(() => {
+            reelStrip.style.transition = `transform ${1.2 + i * 0.4}s cubic-bezier(0.1, 0.9, 0.2, 1.0)`;
+            reelStrip.style.transform = `translateY(-${spinLength * reelHeight}px)`;
+            playTone(300 + i * 100, 'sine', 0.1);
+          }, 50);
+        });
+
+        const winAmount = isWin ? bet * winMultiplier : 0;
+        const res = await this.executeBetRPC(bet, winAmount, 'SLOT');
+
+        setTimeout(() => {
+          if (res && isWin) {
+            UI.setMessage(`JACKPOT CASINO! Menang $${winAmount.toFixed(2)} ke Vault!`);
+            playWinSound();
+          } else {
+            UI.setMessage(`Belum beruntung! Kehilangan $${bet.toFixed(2)} Vault.`);
+            playLoseSound();
+          }
+          State.isPlaying = false;
+        }, 2200);
+      }
+
+      /* GAME 2: WHEEL */
+      static async spinWheel() {
+        if (State.isPlaying) return;
+        const bet = this.getBetAmount();
+        if (!bet) return;
+
+        State.isPlaying = true;
+        UI.setMessage("Memutar roda Casino...");
+
+        const isWin = this.checkWin40Percent();
+        let targetSector = 2; // Sector 2 = 0X (Kalah)
+
+        if (isWin) {
+          const winSectors = [1, 3, 5]; // 1=2X, 3=1.5X, 5=3X
+          targetSector = winSectors[Math.floor(Math.random() * winSectors.length)];
+        } else {
+          const loseSectors = [2, 4, 6]; // 2=0X, 4=0.5X (rugi), 6=0X
+          targetSector = loseSectors[Math.floor(Math.random() * loseSectors.length)];
         }
 
-        async function submitVerifyCode() {
-            const code = document.getElementById('verifyCodeInput').value.trim();
-            const { data, error } = await supabaseClient.rpc('link_minecraft_account', { p_code: code });
-            
-            if (error || !data.success) {
-                alert(data?.message || error.message);
-            } else {
-                alert(data.message);
-                checkMinecraftLink();
-            }
+        let mult = 0;
+        if (targetSector === 1) mult = 2.0;
+        else if (targetSector === 3) mult = 1.5;
+        else if (targetSector === 4) mult = 0.5;
+        else if (targetSector === 5) mult = 3.0;
+
+        const sectorCenterDeg = (targetSector - 1) * 60 + 30;
+        const targetAngleInWheel = 360 - sectorCenterDeg;
+        const extraRounds = 1440;
+        const currentAngle = extraRounds + targetAngleInWheel;
+
+        const wheel = document.getElementById('wheel-disc');
+        wheel.style.transform = `rotate(${currentAngle}deg)`;
+
+        const winAmount = bet * mult;
+        const res = await this.executeBetRPC(bet, winAmount, 'WHEEL');
+
+        setTimeout(() => {
+          if (res && mult >= 1.0) {
+            UI.setMessage(`Roda Berhenti! Menang $${winAmount.toFixed(2)} ke Vault!`);
+            playWinSound();
+          } else {
+            UI.setMessage(`Roda Berhenti! Saldo Vault berkurang.`);
+            playLoseSound();
+          }
+          State.isPlaying = false;
+        }, 3000);
+      }
+
+      /* GAME 3: CARD GAME */
+      static initCardGame() {
+        this.currentCardVal = Math.floor(Math.random() * 10) + 2;
+        this.renderCard(this.currentCardVal, '♥', 'card-red');
+      }
+
+      static renderCard(val, suit, colorClass) {
+        const valStr = val === 1 ? 'A' : val === 11 ? 'J' : val === 12 ? 'Q' : val === 13 ? 'K' : val;
+        document.getElementById('card-val-top').innerText = valStr;
+        document.getElementById('card-val-bot').innerText = valStr;
+        const center = document.getElementById('card-suit-center');
+        center.innerText = suit;
+        center.className = `card-center-suit ${colorClass}`;
+      }
+
+      static async playCard(guess) {
+        if (State.isPlaying) return;
+        const bet = this.getBetAmount();
+        if (!bet) return;
+
+        State.isPlaying = true;
+        const isWin = this.checkWin40Percent();
+
+        let nextVal = this.currentCardVal;
+        if (isWin) {
+          nextVal = guess === 'high' ? Math.min(13, this.currentCardVal + Math.floor(Math.random() * 3) + 1)
+                                     : Math.max(1, this.currentCardVal - Math.floor(Math.random() * 3) - 1);
+        } else {
+          nextVal = guess === 'high' ? Math.max(1, this.currentCardVal - Math.floor(Math.random() * 3) - 1)
+                                     : Math.min(13, this.currentCardVal + Math.floor(Math.random() * 3) + 1);
         }
 
-        async function refreshBalance() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const { data } = await supabaseClient.from('game_points').select('balance').eq('user_id', user.id).single();
-            if (data) document.getElementById('userPoints').innerText = data.balance;
+        this.renderCard(nextVal, '♠', 'card-black');
+
+        const winAmount = isWin ? bet * 2 : 0;
+        const res = await this.executeBetRPC(bet, winAmount, 'CARD');
+
+        if (res && isWin) {
+          UI.setMessage(`TEBAKAN BENAR! Kartu: ${nextVal}. (+ $${winAmount.toFixed(2)} Vault)`);
+          playWinSound();
+        } else {
+          UI.setMessage(`TEBAKAN SALAH! Kartu: ${nextVal}. (- $${bet.toFixed(2)} Vault)`);
+          playLoseSound();
         }
 
-        function openGame(name) {
-            activeGame = name;
-            document.getElementById('currentGameTitle').innerText = name;
-            document.getElementById('gameResultMsg').innerText = '';
-            showView('gameStageView');
-        }
+        this.currentCardVal = nextVal;
+        State.isPlaying = false;
+      }
 
-        async function executePlayGame() {
-            const bet = parseInt(document.getElementById('betInput').value);
-            const btn = document.getElementById('btnPlay');
-            btn.disabled = true;
+      /* GAME 4: COIN FLIP */
+      static async playCoin(guess) {
+        if (State.isPlaying) return;
+        const bet = this.getBetAmount();
+        if (!bet) return;
 
-            const r1 = document.getElementById('r1');
-            const r2 = document.getElementById('r2');
-            const r3 = document.getElementById('r3');
+        State.isPlaying = true;
+        const coinEl = document.getElementById('coin-element');
+        const coinText = document.getElementById('coin-text');
+        coinEl.style.transform = "rotateY(720deg)";
 
-            r1.classList.add('spinning');
-            r2.classList.add('spinning');
-            r3.classList.add('spinning');
+        const isWin = this.checkWin40Percent();
+        const result = isWin ? guess : (guess === 'DEPAN' ? 'BELAKANG' : 'DEPAN');
 
-            const { data, error } = await supabaseClient.rpc('play_arcade_game', {
-                p_game_name: activeGame,
-                p_bet: bet
-            });
+        const winAmount = isWin ? bet * 1.8 : 0; // Win 1.8x bet
+        const res = await this.executeBetRPC(bet, winAmount, 'COIN');
 
-            setTimeout(() => {
-                r1.classList.remove('spinning');
-                r2.classList.remove('spinning');
-                r3.classList.remove('spinning');
-                btn.disabled = false;
+        setTimeout(() => {
+          coinText.innerText = result;
+          coinEl.style.transform = "rotateY(0deg)";
 
-                if (error || !data.success) {
-                    document.getElementById('gameResultMsg').innerText = data?.message || error.message;
-                    document.getElementById('gameResultMsg').style.color = "red";
-                } else {
-                    const symbols = ['🍎','🍋','🍇','💎','👑'];
-                    r1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                    r2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                    r3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+          if (res && isWin) {
+            UI.setMessage(`TEBAKAN BENAR! (${result}) Menang $${winAmount.toFixed(2)} Vault!`);
+            playWinSound();
+          } else {
+            UI.setMessage(`SALAH! Koin: ${result}. Kehilangan $${bet.toFixed(2)} Vault.`);
+            playLoseSound();
+          }
+          State.isPlaying = false;
+        }, 600);
+      }
+    }
 
-                    if (data.net_change > 0) {
-                        confetti({ particleCount: 50, spread: 60 });
-                        document.getElementById('gameResultMsg').innerText = `MENANG! +${data.reward} Game Point (x${data.multiplier})`;
-                        document.getElementById('gameResultMsg').style.color = "green";
-                    } else {
-                        document.getElementById('gameResultMsg').innerText = `KALAH! -${bet} Game Point`;
-                        document.getElementById('gameResultMsg').style.color = "black";
-                    }
-                    refreshBalance();
-                }
-            }, 1000);
-        }
-    </script>
+    // AUTO-INIT
+    window.addEventListener('DOMContentLoaded', () => {
+      Auth.initSession();
+    });
+  </script>
 </body>
 </html>
