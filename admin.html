@@ -536,7 +536,6 @@
        1. CONFIGURATION
        ========================================================================== */
     const CONFIG = {
-      // Masukkan detail credentials Supabase Anda
       SUPABASE_URL: "https://dmltyjxrvzqbavlyrzbi.supabase.co",
       SUPABASE_ANON_KEY: "sb_publishable_Hl7HODK_icRPbsev29r4Hw_XTit1e_b",
       SESSION_KEY_NAME: "kyuryu_web_session_token"
@@ -546,8 +545,12 @@
        2. SUPABASE CLIENT & STATE
        ========================================================================== */
     let db = null;
-    if (CONFIG.SUPABASE_URL.startsWith("http")) {
-      db = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    try {
+      if (typeof supabase !== 'undefined' && CONFIG.SUPABASE_URL.startsWith("http")) {
+        db = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+      }
+    } catch (err) {
+      console.error("Gagal menginisialisasi Supabase SDK:", err);
     }
 
     const State = {
@@ -591,9 +594,9 @@
     function playClickSound() { playTone(600, 'sine', 0.05); }
 
     /* ==========================================================================
-       4. AUTHENTICATION & SESSION MANAGEMENT
+       4. AUTHENTICATION & SESSION MANAGEMENT (DIBENERIN DARI AuthService KE Auth)
        ========================================================================== */
-    class AuthService {
+    class Auth {
       static async initSession() {
         const savedToken = localStorage.getItem(CONFIG.SESSION_KEY_NAME);
         if (!savedToken || !db) {
@@ -630,6 +633,7 @@
 
       static async handleVerification() {
         const inputEl = document.getElementById('verify-code-input');
+        const btnEl = document.getElementById('btn-do-verify');
         const code = inputEl.value.trim().toUpperCase();
 
         if (code.length < 5) {
@@ -638,10 +642,13 @@
         }
 
         if (!db) {
-          UI.setMessage("Supabase URL belum dikonfigurasi!", true);
+          UI.setMessage("Gagal terhubung ke database. Cek koneksi Anda!", true);
           return;
         }
 
+        // Tampilkan indikator loading
+        btnEl.disabled = true;
+        btnEl.innerText = "PEMERIKSAAN...";
         UI.setMessage("Memeriksa kode verifikasi...");
         playClickSound();
 
@@ -649,8 +656,10 @@
           const { data, error } = await db.rpc('consume_verify_code', { p_code: code });
 
           if (error || !data || data.length === 0) {
-            UI.setMessage(error ? error.message : "Kode verifikasi tidak valid atau kadaluwarsa!", true);
+            UI.setMessage(error ? error.message : "Kode verifikasi salah atau sudah kadaluwarsa!", true);
             playLoseSound();
+            btnEl.disabled = false;
+            btnEl.innerText = "VERIFIKASI & MASUK";
             return;
           }
 
@@ -668,8 +677,11 @@
           UI.setMessage("Verifikasi Berhasil! Selamat datang.");
           this.onAuthSuccess();
         } catch (e) {
-          UI.setMessage("Terjadi kesalahan sistem.", true);
+          UI.setMessage("Terjadi kesalahan sistem saat menghubungi database.", true);
           playLoseSound();
+        } finally {
+          btnEl.disabled = false;
+          btnEl.innerText = "VERIFIKASI & MASUK";
         }
       }
 
@@ -991,7 +1003,7 @@
 
     // AUTO-INIT ON LOAD
     window.addEventListener('DOMContentLoaded', () => {
-      AuthService.initSession();
+      Auth.initSession();
     });
   </script>
 </body>
