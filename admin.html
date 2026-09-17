@@ -403,7 +403,7 @@
       ARCADE XP: <span id="arcade-xp">0</span>
     </div>
 
-    <!-- SCREEN 0: VERIFICATION (AUTH WAJIB) -->
+    <!-- SCREEN 0: VERIFICATION -->
     <div class="game-screen active" id="screen-verify">
       <div class="verify-box">
         <div class="verify-title">KYURYU SMP LOGIN</div>
@@ -594,7 +594,7 @@
     function playClickSound() { playTone(600, 'sine', 0.05); }
 
     /* ==========================================================================
-       4. AUTHENTICATION & SESSION MANAGEMENT (DIBENERIN DARI AuthService KE Auth)
+       4. AUTHENTICATION & SESSION MANAGEMENT
        ========================================================================== */
     class Auth {
       static async initSession() {
@@ -618,10 +618,10 @@
           const sessionData = data[0];
           State.session = { token: savedToken };
           State.player = {
-            id: sessionData.player_id,
-            uuid: sessionData.minecraft_uuid,
-            username: sessionData.minecraft_username,
-            rank: sessionData.rank
+            id: sessionData.player_id || sessionData.out_player_id,
+            uuid: sessionData.minecraft_uuid || sessionData.out_minecraft_uuid,
+            username: sessionData.minecraft_username || sessionData.out_minecraft_username,
+            rank: sessionData.rank || 'Player'
           };
 
           this.onAuthSuccess();
@@ -646,7 +646,6 @@
           return;
         }
 
-        // Tampilkan indikator loading
         btnEl.disabled = true;
         btnEl.innerText = "PEMERIKSAAN...";
         UI.setMessage("Memeriksa kode verifikasi...");
@@ -663,13 +662,19 @@
             return;
           }
 
+          // DENGAN RPC SUPABASE BARU: Membaca output dengan awalan 'out_'
           const result = data[0];
-          localStorage.setItem(CONFIG.SESSION_KEY_NAME, result.session_token);
-          State.session = { token: result.session_token };
+          const sessionToken = result.out_session_token || result.session_token;
+          const playerId = result.out_player_id || result.player_id;
+          const mcUuid = result.out_minecraft_uuid || result.minecraft_uuid;
+          const mcName = result.out_minecraft_username || result.minecraft_username;
+
+          localStorage.setItem(CONFIG.SESSION_KEY_NAME, sessionToken);
+          State.session = { token: sessionToken };
           State.player = {
-            id: result.player_id,
-            uuid: result.minecraft_uuid,
-            username: result.minecraft_username,
+            id: playerId,
+            uuid: mcUuid,
+            username: mcName,
             rank: 'Player'
           };
 
@@ -701,7 +706,9 @@
 
       static async logout() {
         if (State.session && db) {
-          await db.rpc('revoke_web_session', { p_token: State.session.token });
+          try {
+            await db.rpc('revoke_web_session', { p_token: State.session.token });
+          } catch(e){}
         }
         this.clearSession();
         UI.switchGame('verify');
@@ -833,7 +840,7 @@
     }
 
     /* ==========================================================================
-       7. GAME ENGINE (NON-MONETARY / ARCADE ONLY)
+       7. GAME ENGINE
        ========================================================================== */
     const slotSymbols = ['seven', 'diamond', 'heart', 'bell', 'cherry'];
 
