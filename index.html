@@ -2,6 +2,17 @@
 <html lang="id" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
+  <!-- Theme Initialization: dijalankan sedini mungkin agar tidak ada flash Dark Mode -->
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('kyuryu-theme');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KyuryuSMP — Premium Survival Minecraft Server</title>
   
@@ -18,6 +29,7 @@
 
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -52,6 +64,7 @@
       background-color: #fafafa;
       color: #18181b;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     /* Skeleton Loading Animasi Smooth */
@@ -108,16 +121,202 @@
       vertical-align: middle;
     }
 
-    /* Carousel Utilities */
+    /* Carousel Utilities & Aspect Ratio Fix */
+    .hero-carousel-wrapper {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      background-color: #18181b;
+    }
+
+    .hero-carousel-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      .hero-carousel-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+    }
+
+    .hero-carousel {
+      width: 100%;
+      aspect-ratio: 1536 / 614;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .hero-carousel {
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+    }
+
     .carousel-track {
       display: flex;
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: transform;
+      height: 100%;
     }
     .carousel-slide {
       min-width: 100%;
+      height: 100%;
       box-sizing: border-box;
     }
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ==========================================================
+       DARK MODE THEME SYSTEM
+       Diterapkan via override CSS variable + class-selector di atas
+       Tailwind existing, sehingga HTML & Light Mode asli tidak disentuh.
+       ========================================================== */
+    :root {
+      --dm-bg: #0b0d0f;
+      --dm-surface: #111418;
+      --dm-card: #15191e;
+      --dm-elevated: #191e24;
+      --dm-elevated-hover: #1f242a;
+      --dm-border: #252b33;
+      --dm-border-hover: #343b45;
+      --dm-text-primary: #f3f4f6;
+      --dm-text-secondary: #a1a7b0;
+      --dm-text-muted: #737a84;
+    }
+
+    /* Smooth, subtle theme transition (tidak mengganggu transition existing
+       karena selector Tailwind seperti .transition-all/.transition-colors
+       punya spesifisitas class yang sama dan ditulis lebih akhir oleh Tailwind) */
+    body, body * {
+      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    /* ---------- Base page ---------- */
+    html.dark body.bg-surface-50 {
+      background-color: var(--dm-bg);
+      color: var(--dm-text-primary);
+    }
+
+    /* ---------- Header ---------- */
+    html.dark header.bg-surface-50\/90 {
+      background-color: rgba(11, 13, 15, 0.9);
+    }
+    html.dark .border-surface-200\/80 { border-color: var(--dm-border); }
+
+    /* ---------- Generic surfaces (order matters least: specificity handles it) ---------- */
+    html.dark .bg-white { background-color: var(--dm-card); }
+    html.dark .bg-white\/50 { background-color: rgba(255, 255, 255, 0.08); }
+    html.dark .bg-surface-50\/50 { background-color: rgba(21, 25, 30, 0.6); }
+    html.dark .bg-surface-50\/30 { background-color: rgba(21, 25, 30, 0.4); }
+    html.dark .bg-surface-100 { background-color: var(--dm-elevated); }
+    html.dark .bg-surface-200 { background-color: var(--dm-border-hover); }
+    html.dark .bg-surface-50 { background-color: var(--dm-elevated); }
+
+    /* surface-950 / 800 dipakai sebagai tombol "dark" di Light Mode.
+       Di Dark Mode dijadikan elevated surface + border supaya tidak melebur
+       dengan background halaman yang sudah gelap. */
+    html.dark .bg-surface-950 {
+      background-color: var(--dm-elevated);
+      border-color: var(--dm-border);
+    }
+    html.dark .hover\:bg-surface-950:hover { background-color: var(--dm-elevated-hover); }
+    html.dark .hover\:bg-surface-800:hover { background-color: var(--dm-border-hover); }
+    html.dark .bg-surface-800 { background-color: var(--dm-elevated); }
+    html.dark .border-surface-800 { border-color: var(--dm-border); }
+
+    /* Overlay/backdrop/gradient di atas gambar (carousel, drawer backdrop)
+       sengaja TIDAK diubah supaya tetap kontras terhadap foto di kedua mode. */
+
+    /* ---------- Borders ---------- */
+    html.dark .border-surface-100 { border-color: var(--dm-border); }
+    html.dark .border-surface-200 { border-color: var(--dm-border); }
+    html.dark .border-surface-200\/60 { border-color: var(--dm-border); }
+
+    /* ---------- Text ---------- */
+    html.dark .text-surface-950 { color: var(--dm-text-primary); }
+    html.dark .text-surface-900 { color: var(--dm-text-primary); }
+    html.dark .text-surface-800 { color: var(--dm-text-secondary); }
+    html.dark .text-surface-700 { color: var(--dm-text-secondary); }
+    html.dark .text-surface-600 { color: var(--dm-text-secondary); }
+    html.dark .text-surface-500 { color: var(--dm-text-muted); }
+    html.dark .text-surface-400 { color: var(--dm-text-muted); }
+    html.dark .hover\:text-surface-900:hover { color: var(--dm-text-primary); }
+    html.dark .hover\:text-surface-950:hover { color: var(--dm-text-primary); }
+    html.dark .active\:bg-surface-100:active { background-color: var(--dm-elevated-hover); }
+    html.dark .hover\:bg-surface-100:hover { background-color: var(--dm-elevated-hover); }
+    html.dark .hover\:bg-surface-50:hover { background-color: var(--dm-elevated); }
+
+    /* ---------- Brand accent (tetap identitas oranye/gold, hanya disesuaikan agar nyaman di dark) ---------- */
+    html.dark .bg-brand-50 { background-color: rgba(217, 119, 6, 0.14); }
+    html.dark .bg-brand-50\/30 { background-color: rgba(217, 119, 6, 0.08); }
+    html.dark .bg-brand-100 { background-color: rgba(217, 119, 6, 0.2); }
+    html.dark .border-brand-200 { border-color: rgba(217, 119, 6, 0.35); }
+    html.dark .text-brand-700 { color: #fbbf24; }
+    html.dark .text-brand-800 { color: #fbbf24; }
+    html.dark .text-brand-900 { color: #fcd34d; }
+
+    /* ---------- Colored badge/icon chips (dipertahankan warnanya, hanya disesuaikan kontras) ---------- */
+    html.dark .bg-emerald-50 { background-color: rgba(5, 150, 105, 0.15); }
+    html.dark .bg-emerald-100 { background-color: rgba(5, 150, 105, 0.2); }
+    html.dark .hover\:bg-emerald-50:hover { background-color: rgba(5, 150, 105, 0.22); }
+    html.dark .hover\:bg-emerald-100:hover { background-color: rgba(5, 150, 105, 0.28); }
+    html.dark .text-emerald-600 { color: #34d399; }
+    html.dark .text-emerald-700 { color: #34d399; }
+    html.dark .text-emerald-800 { color: #6ee7b7; }
+
+    html.dark .bg-purple-50 { background-color: rgba(147, 51, 234, 0.15); }
+    html.dark .bg-purple-100 { background-color: rgba(147, 51, 234, 0.2); }
+    html.dark .border-purple-200 { border-color: rgba(147, 51, 234, 0.35); }
+    html.dark .text-purple-600 { color: #c084fc; }
+    html.dark .text-purple-700 { color: #c084fc; }
+
+    html.dark .bg-red-50 { background-color: rgba(220, 38, 38, 0.15); }
+    html.dark .bg-red-100 { background-color: rgba(220, 38, 38, 0.2); }
+    html.dark .border-red-200 { border-color: rgba(220, 38, 38, 0.35); }
+    html.dark .text-red-700 { color: #f87171; }
+
+    html.dark .bg-sky-50 { background-color: rgba(2, 132, 199, 0.15); }
+    html.dark .bg-sky-100 { background-color: rgba(2, 132, 199, 0.2); }
+    html.dark .border-sky-200 { border-color: rgba(2, 132, 199, 0.35); }
+    html.dark .text-sky-600 { color: #38bdf8; }
+    html.dark .text-sky-700 { color: #38bdf8; }
+
+    html.dark .bg-rose-50 { background-color: rgba(225, 29, 72, 0.15); }
+    html.dark .bg-rose-100 { background-color: rgba(225, 29, 72, 0.2); }
+    html.dark .border-rose-200 { border-color: rgba(225, 29, 72, 0.35); }
+    html.dark .text-rose-500 { color: #fb7185; }
+    html.dark .text-rose-600 { color: #fb7185; }
+    html.dark .text-rose-700 { color: #fb7185; }
+
+    html.dark .bg-stone-200 { background-color: rgba(214, 211, 209, 0.18); }
+    html.dark .text-stone-800 { color: #d6d3d1; }
+
+    html.dark .text-blue-600 { color: #60a5fa; }
+
+    /* ---------- Scrollbar (Light Mode existing tidak diubah) ---------- */
+    html.dark ::-webkit-scrollbar-track { background: var(--dm-bg); }
+    html.dark ::-webkit-scrollbar-thumb { background: #3a4048; }
+    html.dark ::-webkit-scrollbar-thumb:hover { background: #4b525c; }
+
+    /* ---------- Skeleton loading tetap berfungsi, gradasi disesuaikan ---------- */
+    html.dark .skeleton {
+      background: linear-gradient(90deg, #191e24 25%, #21262d 50%, #191e24 75%);
+      background-size: 200% 100%;
+    }
+
+    /* ---------- Theme toggle button ---------- */
+    .theme-toggle-btn i.fa-sun { color: #fbbf24; }
   </style>
 </head>
 <body class="font-sans antialiased text-surface-900 bg-surface-50 min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
@@ -168,13 +367,26 @@
         <a href="https://web.kyuryu.my.id/penel.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 text-xs font-semibold text-white bg-surface-950 hover:bg-surface-800 rounded-lg transition-colors inline-flex items-center gap-1.5">
           <i class="fa-solid fa-server text-xs"></i> Panel
         </a>
+
+        <!-- Theme Toggle (Desktop) -->
+        <button onclick="toggleTheme()" class="theme-toggle-btn w-9 h-9 rounded-lg bg-surface-100 hover:bg-surface-200 border border-surface-200 flex items-center justify-center text-surface-700 transition-all focus:outline-none active:scale-95" id="theme-toggle-desktop" aria-label="Aktifkan dark mode" title="Aktifkan dark mode">
+          <i class="fa-solid fa-moon text-sm" id="theme-icon-desktop"></i>
+        </button>
       </div>
 
-      <!-- Mobile Hamburger Button Redesigned -->
-      <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-200 flex items-center justify-center text-surface-900 transition-all focus:outline-none active:scale-95 relative" aria-label="Toggle Navigation Menu">
-        <i class="fa-solid fa-bars text-base transition-transform duration-200" id="menu-icon"></i>
-        <span id="dot-mobile-trigger" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-      </button>
+      <!-- Mobile Header Right Group: Theme Toggle + Hamburger -->
+      <div class="md:hidden flex items-center gap-2">
+        <!-- Theme Toggle (Mobile) -->
+        <button onclick="toggleTheme()" class="theme-toggle-btn w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-200 flex items-center justify-center text-surface-900 transition-all focus:outline-none active:scale-95" id="theme-toggle-mobile" aria-label="Aktifkan dark mode" title="Aktifkan dark mode">
+          <i class="fa-solid fa-moon text-base" id="theme-icon-mobile"></i>
+        </button>
+
+        <!-- Mobile Hamburger Button Redesigned -->
+        <button onclick="toggleMobileMenu()" class="w-10 h-10 rounded-xl bg-surface-100 hover:bg-surface-200 border border-surface-200 flex items-center justify-center text-surface-900 transition-all focus:outline-none active:scale-95 relative" aria-label="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars text-base transition-transform duration-200" id="menu-icon"></i>
+          <span id="dot-mobile-trigger" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -277,23 +489,25 @@
     </div>
   </div>
 
-  <!-- HERO CAROUSEL CONTAINER (POSITIONED BEFORE HERO EXISTING) -->
-  <div id="carousel-section" class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 hidden">
-    <div class="relative overflow-hidden rounded-2xl border border-surface-200 bg-surface-900 shadow-sm group">
-      
-      <!-- Track Slides -->
-      <div id="carousel-track" class="carousel-track"></div>
+  <!-- HERO CAROUSEL CONTAINER (UPDATED EDGE-TO-EDGE & BREAKOUT) -->
+  <div id="carousel-section" class="hero-carousel-wrapper py-4 md:py-6 hidden">
+    <div class="hero-carousel-container">
+      <div class="hero-carousel relative overflow-hidden group">
+        
+        <!-- Track Slides -->
+        <div id="carousel-track" class="carousel-track"></div>
 
-      <!-- Navigation Arrows -->
-      <button onclick="moveCarousel(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface-950/60 text-white backdrop-blur-md border border-white/20 hidden md:flex items-center justify-center hover:bg-surface-950 transition-all opacity-0 group-hover:opacity-100">
-        <i class="fa-solid fa-chevron-left text-sm"></i>
-      </button>
-      <button onclick="moveCarousel(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface-950/60 text-white backdrop-blur-md border border-white/20 hidden md:flex items-center justify-center hover:bg-surface-950 transition-all opacity-0 group-hover:opacity-100">
-        <i class="fa-solid fa-chevron-right text-sm"></i>
-      </button>
+        <!-- Navigation Arrows -->
+        <button onclick="moveCarousel(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface-950/60 text-white backdrop-blur-md border border-white/20 hidden md:flex items-center justify-center hover:bg-surface-950 transition-all opacity-0 group-hover:opacity-100 z-10">
+          <i class="fa-solid fa-chevron-left text-sm"></i>
+        </button>
+        <button onclick="moveCarousel(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface-950/60 text-white backdrop-blur-md border border-white/20 hidden md:flex items-center justify-center hover:bg-surface-950 transition-all opacity-0 group-hover:opacity-100 z-10">
+          <i class="fa-solid fa-chevron-right text-sm"></i>
+        </button>
 
-      <!-- Indicator Dots -->
-      <div id="carousel-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10"></div>
+        <!-- Indicator Dots -->
+        <div id="carousel-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10"></div>
+      </div>
     </div>
   </div>
 
@@ -794,100 +1008,8 @@
       <button onclick="filterStaffPage('dev-admin')" id="staff-tab-dev-admin" class="staff-filter-btn px-3 py-1.5 rounded-lg bg-surface-100 text-surface-700 hover:bg-surface-200 transition-colors">Dev / Admin</button>
     </div>
 
-    <!-- Staff Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="staff-grid-cards">
-      
-      <!-- SinChan -->
-      <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4" data-category="owner">
-        <div class="flex items-center gap-4">
-          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80" alt="SinChan" class="w-14 h-14 rounded-full object-cover border border-surface-200" />
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-surface-950">SinChan</h3>
-              <span class="text-[10px] font-extrabold uppercase bg-red-100 text-red-700 px-2 py-0.5 rounded">Owner</span>
-            </div>
-            <p class="text-xs text-surface-500 font-mono">+81 80-4124-3251</p>
-            <p class="text-xs text-surface-600">Founder, penanggung jawab utama & transaksi.</p>
-          </div>
-        </div>
-        <a href="https://wa.me/818041243251" target="_blank" rel="noopener noreferrer" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors text-lg" title="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-
-      <!-- gongon -->
-      <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4" data-category="co-owner">
-        <div class="flex items-center gap-4">
-          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80" alt="gongon" class="w-14 h-14 rounded-full object-cover border border-surface-200" />
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-surface-950">gongon</h3>
-              <span class="text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Co-Owner</span>
-            </div>
-            <p class="text-xs text-surface-500 font-mono">+62 823-4785-5105</p>
-            <p class="text-xs text-surface-600">Co-Owner 2 & Manajemen server.</p>
-          </div>
-        </div>
-        <a href="https://wa.me/6282347855105" target="_blank" rel="noopener noreferrer" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors text-lg" title="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-
-      <!-- RaksjaDEV -->
-      <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4" data-category="dev-admin">
-        <div class="flex items-center gap-4">
-          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="RaksjaDEV" class="w-14 h-14 rounded-full object-cover border border-surface-200" />
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-surface-950">RaksjaDEV</h3>
-              <span class="text-[10px] font-extrabold uppercase bg-sky-100 text-sky-800 px-2 py-0.5 rounded">Lead Dev</span>
-            </div>
-            <p class="text-xs text-surface-500 font-mono">+62 878-2568-0992</p>
-            <p class="text-xs text-surface-600">Developer Utama Sistem Server.</p>
-          </div>
-        </div>
-        <a href="https://wa.me/6287825680992" target="_blank" rel="noopener noreferrer" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors text-lg" title="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-
-      <!-- Azelneko -->
-      <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4" data-category="dev-admin">
-        <div class="flex items-center gap-4">
-          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" alt="Azelneko" class="w-14 h-14 rounded-full object-cover border border-surface-200" />
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-surface-950">Azelneko</h3>
-              <span class="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-800 px-2 py-0.5 rounded">Admin</span>
-            </div>
-            <p class="text-xs text-surface-500 font-mono">+62 851-8503-7041</p>
-            <p class="text-xs text-surface-600">Developer / Admin Operasional.</p>
-          </div>
-        </div>
-        <a href="https://wa.me/6285185037041" target="_blank" rel="noopener noreferrer" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors text-lg" title="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-
-      <!-- Kentrut -->
-      <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4 md:col-span-2" data-category="dev-admin">
-        <div class="flex items-center gap-4">
-          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80" alt="Kentrut" class="w-14 h-14 rounded-full object-cover border border-surface-200" />
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-surface-950">Kentrut</h3>
-              <span class="text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Admin</span>
-            </div>
-            <p class="text-xs text-surface-500 font-mono">+62 857-5783-7143</p>
-            <p class="text-xs text-surface-600">Developer / Tim Support Operasional.</p>
-          </div>
-        </div>
-        <a href="https://wa.me/6285757837143" target="_blank" rel="noopener noreferrer" class="p-2.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors text-lg" title="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-      </div>
-
-    </div>
+    <!-- Staff Cards Grid (Loaded dynamically from Supabase) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="staff-grid-cards"></div>
   </main>
 
   <!-- ==================== PAGE 4: EVENTS (#events) ==================== -->
@@ -1371,9 +1493,17 @@
           .eq('is_active', true)
           .order('sort_order', { ascending: true });
 
-        if (error || !staff || staff.length === 0) return;
-
         const container = document.getElementById('staff-grid-cards');
+
+        if (error || !staff || staff.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full p-8 rounded-xl border border-surface-200 bg-white text-center text-surface-500 text-xs">
+              Belum ada data tim staff yang ditambahkan.
+            </div>
+          `;
+          return;
+        }
+
         container.innerHTML = staff.map(st => `
           <div class="staff-card-item p-5 rounded-xl border border-surface-200 bg-white flex items-center justify-between gap-4" data-category="${st.category}">
             <div class="flex items-center gap-4">
@@ -1423,9 +1553,9 @@
         section.classList.remove('hidden');
 
         track.innerHTML = carousel.map((item, idx) => `
-          <div class="carousel-slide relative h-48 sm:h-64 cursor-pointer" onclick="handleCarouselClick('${item.link_type}', '${item.link_id}', '${item.link_url}')">
-            <img src="${item.image_url}" alt="${item.title || 'Carousel Slide'}" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-surface-950/90 via-surface-950/30 to-transparent flex flex-col justify-end p-6 text-white">
+          <div class="carousel-slide relative cursor-pointer" onclick="handleCarouselClick('${item.link_type}', '${item.link_id}', '${item.link_url}')">
+            <img src="${item.image_url}" alt="${item.title || 'Carousel Slide'}" />
+            <div class="absolute inset-0 bg-gradient-to-t from-surface-950/90 via-surface-950/30 to-transparent flex flex-col justify-end p-6 text-white pointer-events-none">
               ${item.title ? `<h3 class="font-display font-bold text-lg sm:text-2xl">${item.title}</h3>` : ''}
               ${item.description ? `<p class="text-xs sm:text-sm text-surface-300 line-clamp-1">${item.description}</p>` : ''}
             </div>
@@ -1613,6 +1743,9 @@
           checkNotifications();
           if (window.location.hash.includes('info')) loadNewsData();
         })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'staff' }, () => {
+          loadStaffData();
+        })
         .subscribe();
     }
 
@@ -1644,6 +1777,49 @@
         toast.classList.add('hidden');
         toast.classList.remove('flex');
       }, 3000);
+    }
+
+    /* ==========================================
+       9. DARK MODE / LIGHT MODE THEME TOGGLE
+       ========================================== */
+    const THEME_STORAGE_KEY = 'kyuryu-theme';
+
+    function applyTheme(isDark) {
+      document.documentElement.classList.toggle('dark', isDark);
+
+      const iconConfigs = [
+        { el: document.getElementById('theme-icon-desktop'), size: 'text-sm' },
+        { el: document.getElementById('theme-icon-mobile'), size: 'text-base' }
+      ];
+      const buttons = [document.getElementById('theme-toggle-desktop'), document.getElementById('theme-toggle-mobile')];
+      const label = isDark ? 'Aktifkan light mode' : 'Aktifkan dark mode';
+
+      iconConfigs.forEach(({ el, size }) => {
+        if (!el) return;
+        el.className = `fa-solid ${isDark ? 'fa-sun' : 'fa-moon'} ${size}`;
+      });
+
+      buttons.forEach(btn => {
+        if (!btn) return;
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+      });
+    }
+
+    function toggleTheme() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
+      } catch (e) {}
+      applyTheme(isDark);
+    }
+
+    function initializeTheme() {
+      let savedTheme = 'light';
+      try {
+        savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+      } catch (e) {}
+      applyTheme(savedTheme === 'dark');
     }
 
     /* MOBILE DRAWER TOGGLE LOGIC */
@@ -1706,6 +1882,7 @@
 
     /* Initialize Applications */
     document.addEventListener('DOMContentLoaded', () => {
+      initializeTheme();
       checkServerStatus();
       loadCarousel();
       loadStaffData();
